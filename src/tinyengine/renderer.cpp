@@ -59,7 +59,7 @@ void initShader(const std::string& vertex, const std::string& fragment) {
     std::ifstream file(vertex);
     if (file.fail()) {
         Log("vertex shader %s load failed", vertex.c_str());
-        throw std::runtime_error("vertex shader load failed");
+        FATAL_ERROR("vertex shader load failed");
     }
     std::string vertexCode((std::istreambuf_iterator<char>(file)),
                             std::istreambuf_iterator<char>());
@@ -68,7 +68,7 @@ void initShader(const std::string& vertex, const std::string& fragment) {
     file.open(fragment);
     if (file.fail()) {
         Log("fragment shader %s load failed", fragment.c_str());
-        throw std::runtime_error("fragment shader load failed");
+        FATAL_ERROR("fragment shader load failed");
     }
     std::string fragmentCode((std::istreambuf_iterator<char>(file)),
                               std::istreambuf_iterator<char>());
@@ -88,8 +88,8 @@ void setShaderOrtho() {
 void Renderer::Init() {
     createWhiteTexture();
     initRenderContext();
-    initShader("./assets/shaders/vertex.shader",
-               "./assets/shaders/fragment.shader");
+    initShader("assets/shaders/vertex.shader",
+               "assets/shaders/fragment.shader");
     setShaderOrtho();
 }
 

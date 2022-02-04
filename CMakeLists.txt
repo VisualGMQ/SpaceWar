@@ -16,7 +16,7 @@ aux_source_directory(libs/stb_image     ENGINE_SRC)
 
 add_library(${ENGINE_NAME} STATIC ${ENGINE_SRC})
 
-set(BUILD_SHARED_LIBS CACHE BOOL OFF "Build shared libraries")
+set(GLFW_BUILD_SHARED_LIBRARY CACHE BOOL OFF "Build shared libraries")
 set(GLFW_BUILD_DOCS CACHE BOOL OFF"Build the GLFW documentation")
 set(GLFW_INSTALL CACHE BOOL OFF "Generate installation target")
 add_subdirectory(libs/glfw)
@@ -42,6 +42,11 @@ target_compile_definitions(
     PUBLIC $<$<STREQUAL:$<UPPER_CASE:"${CMAKE_BUILD_TYPE}">,"DEBUG">:GAME_DEBUG>
 )
 
+target_compile_options(
+    ${ENGINE_NAME}
+    PUBLIC $<$<STREQUAL:$<UPPER_CASE:"${CMAKE_BUILD_TYPE}">,"RELEASE">:-Os> -fno-rtti -fno-exceptions
+)
+
 ################
 # space sector
 ################
@@ -63,8 +68,30 @@ target_compile_features(
     PUBLIC cxx_std_17
 )
 
+add_custom_target(
+    CompressExe
+    COMMAND strip ${PROJECT_NAME}
+    COMMAND upx --best --ultra-brute ${PROJECT_NAME}
+    DEPENDS ${PROJECT_NAME}
+    COMMENT "make SpaceSector more small"
+    VERBATIM
+)
+
 #############
 # unit test
 #############
 include(CTest)
 add_subdirectory(tests)
+
+###############
+# install game
+###############
+install(
+    PROGRAMS ${CMAKE_BINARY_DIR}/SpaceSector
+    DESTINATION ${PROJECT_SOURCE_DIR}/output
+)
+
+install(
+    DIRECTORY ${PROJECT_SOURCE_DIR}/assets
+    DESTINATION ${PROJECT_SOURCE_DIR}/output
+)

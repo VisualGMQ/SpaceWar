@@ -1,18 +1,19 @@
 #pragma once
 
 #include "tinyengine/libmath.hpp"
+#include "tinyengine/tool.hpp"
 
 #define TEST_TRUE(condition) do { \
     if (!(condition)) { \
         std::cout << "[TEST_TRUE] " << #condition << " test failed!" << std::endl; \
-        throw std::runtime_error("TEST TRUE failed"); \
+        FATAL_ERROR("TEST TRUE failed"); \
     } \
 } while(0)
 
 #define TEST_FALSE(condition) do { \
     if (condition) { \
         std::cout << "[TEST FALSE] " << #condition << " test failed!" << std::endl; \
-        throw std::runtime_error("TEST FALSE failed"); \
+        FATAL_ERROR("TEST FALSE failed"); \
     } \
 } while(0)
 

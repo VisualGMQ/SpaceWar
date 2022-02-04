@@ -1,5 +1,4 @@
 #include "engine.hpp"
-#include "event.hpp"
 
 void error_callback(int error, const char* description) {
     fprintf(stderr, "Error: %s\n", description);
@@ -7,7 +6,7 @@ void error_callback(int error, const char* description) {
 
 void Engine::Init(const std::string& title, const Size& size, Scence* scence) {
     if (!glfwInit()) {
-        throw std::runtime_error("glfw init failed");
+        FATAL_ERROR("glfw init failed");
     }
     glfwSetErrorCallback(error_callback);
 
@@ -23,7 +22,7 @@ void Engine::Init(const std::string& title, const Size& size, Scence* scence) {
 
     if (!window_) {
         glfwTerminate();
-        throw std::runtime_error("glfw window create failed");
+        FATAL_ERROR("glfw window create failed");
     }
 
     glfwMakeContextCurrent(window_);
@@ -32,7 +31,7 @@ void Engine::Init(const std::string& title, const Size& size, Scence* scence) {
 
     if (!gladLoadGL(glfwGetProcAddress)) {
         glfwTerminate();
-        throw std::runtime_error("glad load failed");
+        FATAL_ERROR("glad load failed");
     }
 
     int width, height;

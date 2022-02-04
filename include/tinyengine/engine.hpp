@@ -4,6 +4,8 @@
 #include "renderer.hpp"
 #include "scence.hpp"
 #include "inner_bmpfont.hpp"
+#include "event.hpp"
+#include "tool.hpp"
 
 class Engine final {
 public:
