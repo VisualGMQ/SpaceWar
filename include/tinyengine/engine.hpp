@@ -6,6 +6,7 @@
 #include "inner_bmpfont.hpp"
 #include "event.hpp"
 #include "tool.hpp"
+#include "audio.hpp"
 
 class Engine final {
 public:

@@ -13,3 +13,7 @@ using Ref = std::shared_ptr<T>;
 #else
 #define FATAL_ERROR(msg)
 #endif
+
+inline float GetTime() {
+    return glfwGetTime();
+}

@@ -1,15 +1,7 @@
 #include "renderer.hpp"
-#include "libmath.hpp"
 #include "engine.hpp"
 
 Color Renderer::color_ = {255, 255, 255, 255};
-
-struct Vertex {
-    float x;
-    float y;
-    float texCoordX;
-    float texCoordY;
-};
 
 struct {
     GLuint vbo;
@@ -20,16 +12,15 @@ struct {
     Unique<Texture> WhiteTexture;
     Camera* camera = nullptr;
 
-    Vertex rectVertices[6] = {
-        {0.0f, 1.0f, 0.0f, 1.0f},
-        {1.0f, 0.0f, 1.0f, 0.0f},
-        {0.0f, 0.0f, 0.0f, 0.0f},
+    const std::array<Vertex, 6> vertices = {
+        Vertex{-0.5f, 0.5f, 0.0f, 1.0f},
+        Vertex{ 0.5f,-0.5f, 1.0f, 0.0f},
+        Vertex{-0.5f,-0.5f, 0.0f, 0.0f},
 
-        {0.0f, 1.0f, 0.0f, 1.0f},
-        {1.0f, 1.0f, 1.0f, 1.0f},
-        {1.0f, 0.0f, 1.0f, 0.0f}
+        Vertex{-0.5f, 0.5f, 0.0f, 1.0f},
+        Vertex{ 0.5f, 0.5f, 1.0f, 1.0f},
+        Vertex{ 0.5f,-0.5f, 1.0f, 0.0f}
     };
-
 } Context;
 
 void createWhiteTexture() {
@@ -86,6 +77,8 @@ void setShaderOrtho() {
 }
 
 void Renderer::Init() {
+    GL_CALL(glEnable(GL_BLEND));
+    GL_CALL(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
     createWhiteTexture();
     initRenderContext();
     initShader("assets/shaders/vertex.shader",
@@ -128,41 +121,93 @@ void Renderer::DrawRect(const Rect& rect) {
 }
 
 void Renderer::FillRect(const Rect& rect) {
-    GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, Context.vbo));
-    GL_CALL(glBindVertexArray(Context.vao));
-    GL_CALL(glBufferData(GL_ARRAY_BUFFER,
-                         sizeof(Context.rectVertices),
-                         Context.rectVertices,
-                         GL_STATIC_DRAW));
-    Context.shader->Use();
-    Context.WhiteTexture->Bind();
-    Context.shader->SetMat4("model", Mat44({
-                                rect.w,      0, 0, rect.x,
-                                     0, rect.h, 0, rect.y,
-                                     0,      0, 1,       0,
-                                     0,      0, 0,       1,
-                            }));
-    Context.shader->SetInt("Texture", 0);
-    GL_CALL(glDrawArrays(GL_TRIANGLES, 0, 6));
+    drawRectFrag(nullptr,
+                 Context.vertices,
+                 CreateSRT(Point{rect.x + rect.w / 2, rect.y + rect.h / 2},
+                           Point{rect.w, rect.h},
+                           0),
+                 Renderer::color_);
 }
 
-void Renderer::DrawTexture(const Texture& texture,
+void Renderer::DrawTile(const Tile& tile,
+                        const Point& pos,
+                        const Size& size,
+                        float degree,
+                        Renderer::FlipFlag flip) {
+    if (size.w == 0 && size.h == 0) {
+        DrawTexture(tile.texture, &tile.rect, pos, tile.size, degree, flip);
+    } else {
+        DrawTexture(tile.texture, &tile.rect, pos, size, degree, flip);
+    }
+}
+
+void Renderer::DrawTexture(const Texture* texture,
+                           const Rect* srcrect,
+                           const Point& pos,
+                           const Size& size,
+                           float degree,
+                           FlipFlag flip) {
+    if (texture) {
+        auto scale = size;
+        if (size.w == 0 && size.h == 0) {
+            scale = texture->GetSize();
+        }
+        if (flip & Vertical) {
+            scale.h *= -1;
+        }
+        if (flip & Horizontal) {
+            scale.w *= -1;
+        }
+        DrawTexture(texture, srcrect, CreateSRT(pos, scale, degree));
+    }
+}
+
+void Renderer::DrawTexture(const Texture* texture,
+                           const Rect* rect,
                            const Mat44& transform,
                            const Color& color) {
+    if (!texture) return;
+    auto& size = texture->GetSize();
+    if (!rect) {
+        drawRectFrag(texture, Context.vertices, transform, color);
+    } else {
+        auto vertices = Context.vertices;
+        vertices[0].texcoord = Point{rect->x / size.w,
+                                     (rect->y + rect->h) / size.h};
+        vertices[1].texcoord = Point{(rect->x + rect->w) / size.w,
+                                      rect->y / size.h};
+        vertices[2].texcoord = Point{rect->x / size.w, rect->y / size.h};
+        vertices[3].texcoord = vertices[0].texcoord;
+        vertices[4].texcoord = Point{(rect->x + rect->w) / size.w,
+                                     (rect->y + rect->h) / size.h};
+        vertices[5].texcoord = vertices[1].texcoord;
+        drawRectFrag(texture, vertices, transform, color);
+    }
+}
+
+void Renderer::drawRectFrag(const Texture* texture,
+                            const std::array<Vertex, 6>& vertices,
+                            const Mat44& transform,
+                            const Color& color) {
     Context.shader->Use();
     Context.shader->SetInt("Texture", 0);
-    texture.Bind(0);
+    if (texture) {
+        texture->Bind(0);
+    } else {
+        Context.WhiteTexture->Bind(0);
+    }
 
     GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, Context.vbo));
     GL_CALL(glBindVertexArray(Context.vao));
     GL_CALL(glBufferData(GL_ARRAY_BUFFER,
-                         sizeof(Context.rectVertices),
-                         Context.rectVertices,
+                         sizeof(Vertex) * vertices.size(),
+                         vertices.data(),
                          GL_STATIC_DRAW));
 
     Renderer::SetDrawColor(color);
     Context.shader->SetMat4("model", transform);
     GL_CALL(glDrawArrays(GL_TRIANGLES, 0, 6));
+
 }
 
 void Renderer::Clear() {

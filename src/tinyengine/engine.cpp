@@ -39,7 +39,11 @@ void Engine::Init(const std::string& title, const Size& size, Scence* scence) {
     Renderer::SetViewport(0, 0, width, height);
 
     Renderer::Init();
+    Log("render system init OK");
     Renderer::SetClearColor(Color{0.1, 0.1, 0.1, 1});
+    
+    Audio::Init();
+    Log("sound system init OK");
 
     scence_.reset(scence);
     scence_->OnInit();
@@ -75,6 +79,7 @@ void Engine::PollEvent() {
 }
 
 void Engine::Shutdown() {
+    Audio::Shutdown();
     if (scence_)
         scence_->OnQuit();
     glfwDestroyWindow(window_);

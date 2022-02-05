@@ -21,6 +21,8 @@
 #include <limits>
 #include <cassert>
 
+#include "miniaudio.h"
+
 #ifdef USE_GLM
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"

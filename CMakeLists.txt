@@ -11,8 +11,10 @@ set(ENGINE_NAME tinyengine)
 
 aux_source_directory(src/tinyengine     ENGINE_SRC)
 aux_source_directory(src/component      ENGINE_SRC)
+aux_source_directory(src/tinyengine/ecs ENGINE_SRC)
 aux_source_directory(libs/glad/src      ENGINE_SRC)
 aux_source_directory(libs/stb_image     ENGINE_SRC)
+aux_source_directory(libs/miniaudio/    ENGINE_SRC)
 
 add_library(${ENGINE_NAME} STATIC ${ENGINE_SRC})
 
@@ -24,7 +26,7 @@ add_subdirectory(libs/glfw)
 target_include_directories(
     ${ENGINE_NAME}
     PRIVATE include/tinyengine
-    PUBLIC libs/glad/include libs/stb_image # /usr/local/Cellar/glm/0.9.9.8/include
+    PUBLIC libs/glad/include libs/stb_image libs/miniaudio # /usr/local/Cellar/glm/0.9.9.8/include
 )
 
 target_link_libraries(
@@ -51,6 +53,7 @@ target_compile_options(
 # space sector
 ################
 aux_source_directory(src/game GAME_SRC)
+aux_source_directory(src/game/stages GAME_SRC)
 add_executable(${PROJECT_NAME} ${GAME_SRC})
 
 target_include_directories(

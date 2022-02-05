@@ -3,17 +3,22 @@
 Texture::Texture(const std::string& filename) {
     int w, h, channels;
     unsigned char* data = stbi_load(filename.c_str(), &w, &h, &channels, 0);
-    if (channels == 4) {
-        format_ = GL_RGBA;
-    }else if (channels == 3) {
-        format_ = GL_RGB;
+    if (!data) {
+        Log("%s load failed!", filename.c_str());
+        texture_ = 0;
+    } else {
+        if (channels == 4) {
+            format_ = GL_RGBA;
+        }else if (channels == 3) {
+            format_ = GL_RGB;
+        }
+        size_.x = w;
+        size_.y = h;
+
+        createFromPixels(data, w, h, format_);
+
+        stbi_image_free(data);
     }
-    size_.x = w;
-    size_.y = h;
-
-    createFromPixels(data, w, h, format_);
-
-    stbi_image_free(data);
 }
 
 Texture::Texture(const unsigned char* data, int w, int h, GLenum format) {

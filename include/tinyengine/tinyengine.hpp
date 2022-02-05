@@ -9,3 +9,5 @@
 #include "texture.hpp"
 #include "tool.hpp"
 #include "inner_bmpfont.hpp"
+#include "audio.hpp"
+#include "tilesheet.hpp"

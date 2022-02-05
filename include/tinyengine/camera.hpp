@@ -13,7 +13,7 @@ public:
 
 private:
     Mat44 viewMat_;
-    Point position_;
-    Point scale_;
+    Point position_ = {0, 0};
+    Point scale_ = {1, 1};
     bool dirty_ = false;
 };

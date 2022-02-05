@@ -143,3 +143,20 @@ inline Mat44 CreateOrthoMat(float left, float right,
             0,                   0,                   0,                 1,
            });
 }
+
+inline Point GetCenterAlign(const Rect& parent, const Size& child) {
+    return Point{parent.x + (parent.w - child.w) / 2.0f,
+                 parent.y + (parent.h - child.h) / 2.0f};
+}
+
+inline Mat44 CreateSRT(const Point& pos, const Point& scale, float degree) {
+    float theta = Radians(degree);
+    float sinTheta = std::sin(theta),
+          cosTheta = std::cos(theta);
+    return Mat44({
+                 scale.x * cosTheta, scale.y * sinTheta, 0, pos.x,
+                -scale.x * sinTheta, scale.y * cosTheta, 0, pos.y,
+                                  0,                  0, 1,     0,
+                                  0,                  0, 0,     1,
+           });
+}
