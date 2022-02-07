@@ -1,4 +1,4 @@
-#include "texture.hpp"
+#include "tinyengine/texture.hpp"
 
 Texture::Texture(const std::string& filename) {
     int w, h, channels;

@@ -1,5 +1,5 @@
-#include "renderer.hpp"
-#include "engine.hpp"
+#include "tinyengine/renderer.hpp"
+#include "tinyengine/engine.hpp"
 
 Color Renderer::color_ = {255, 255, 255, 255};
 

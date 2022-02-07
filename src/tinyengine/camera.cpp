@@ -1,4 +1,4 @@
-#include "camera.hpp"
+#include "tinyengine/camera.hpp"
 
 bool Camera::TryCalcView() {
     if (dirty_) {

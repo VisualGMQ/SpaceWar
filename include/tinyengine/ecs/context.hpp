@@ -1,6 +1,6 @@
 _Pragma("once")
 
-#include "pool.hpp"
+#include "tinyengine/pool.hpp"
 #include "component.hpp"
 
 class Entity;

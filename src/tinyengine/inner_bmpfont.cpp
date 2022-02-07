@@ -1,4 +1,4 @@
-#include "inner_bmpfont.hpp"
+#include "tinyengine/inner_bmpfont.hpp"
 
 InnerBmpFont::InnerBmpFont() {
     saveChar('0',

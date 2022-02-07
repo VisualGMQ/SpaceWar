@@ -1,4 +1,4 @@
-#include "shader.hpp"
+#include "tinyengine/shader.hpp"
 
 GLuint createShader(const std::string& code, GLenum type) {
     GLuint shader;

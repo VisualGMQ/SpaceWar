@@ -1,7 +1,7 @@
-_Pragma("once")
+#pragma once
 
-#include "pch.hpp"
-#include "pool.hpp"
+#include "tinyengine/pch.hpp"
+#include "tinyengine/pool.hpp"
 #include "component.hpp"
 #include "context.hpp"
 

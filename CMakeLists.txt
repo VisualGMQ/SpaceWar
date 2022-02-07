@@ -25,8 +25,7 @@ add_subdirectory(libs/glfw)
 
 target_include_directories(
     ${ENGINE_NAME}
-    PRIVATE include/tinyengine
-    PUBLIC libs/glad/include libs/stb_image libs/miniaudio # /usr/local/Cellar/glm/0.9.9.8/include
+    PUBLIC include libs/glad/include libs/stb_image libs/miniaudio # /usr/local/Cellar/glm/0.9.9.8/include
 )
 
 target_link_libraries(
@@ -54,12 +53,8 @@ target_compile_options(
 ################
 aux_source_directory(src/game GAME_SRC)
 aux_source_directory(src/game/stages GAME_SRC)
+aux_source_directory(src/game/controllers GAME_SRC)
 add_executable(${PROJECT_NAME} ${GAME_SRC})
-
-target_include_directories(
-    ${PROJECT_NAME}
-    PRIVATE include
-)
 
 target_link_libraries(
     ${PROJECT_NAME}

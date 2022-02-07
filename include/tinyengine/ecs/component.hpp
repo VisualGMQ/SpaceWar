@@ -1,7 +1,7 @@
 _Pragma("once")
 
-#include "pch.hpp"
-#include "pool.hpp"
+#include "tinyengine/pch.hpp"
+#include "tinyengine/pool.hpp"
 
 using ComponentId = unsigned int;
 

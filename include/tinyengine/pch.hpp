@@ -2,9 +2,10 @@
 
 #include "glad/gl.h"
 #include "GLFW/glfw3.h"
-#include "stb_image.h"
+
 #include <string>
 #include <vector>
+#include <list>
 #include <iostream>
 #include <memory>
 #include <fstream>
@@ -22,6 +23,7 @@
 #include <cassert>
 
 #include "miniaudio.h"
+#include "stb_image.h"
 
 #ifdef USE_GLM
 #include "glm/glm.hpp"

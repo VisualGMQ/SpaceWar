@@ -1,4 +1,4 @@
-#include "glhelpfunc.hpp"
+#include "tinyengine/glhelpfunc.hpp"
 
 #define CASE(e) case e: return #e;
 

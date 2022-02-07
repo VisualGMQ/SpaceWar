@@ -1,5 +1,5 @@
-#include "ecs/context.hpp"
-#include "ecs/entity.hpp"
+#include "tinyengine/ecs/context.hpp"
+#include "tinyengine/ecs/entity.hpp"
 
 Pool<Entity>::ElemContainer& Context::GetEntities() {
     return entities_.GetElems();
