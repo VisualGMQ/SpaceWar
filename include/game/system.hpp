@@ -22,6 +22,11 @@ private:
     void correctColliRect(MoveCmpt&, CollisionCmpt&);
 };
 
+class CollideSystem: public UpdateSystem {
+public:
+    void Update(float dt) override;
+};
+
 class CleanupSystem: public UpdateSystem {
 public:
     void Update(float dt) override;
@@ -38,4 +43,5 @@ public:
 
 private:
     void renderEntity(Entity* entity, const RenderCmpt&);
+    void renderCollideBox(Entity* entity);
 };

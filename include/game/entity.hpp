@@ -5,4 +5,5 @@
 #include "game/global.hpp"
 
 Entity* CreateFreightShip();
+Entity* CreateFightShip();
 Entity* CreateBullet(int damage, Entity* owner, float maxSpeedß);

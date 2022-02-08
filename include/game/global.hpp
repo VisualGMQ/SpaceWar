@@ -5,14 +5,11 @@
 
 extern Context ECSContext;
 extern SystemManager SystemMgr;
-extern std::unordered_map<std::string, Unique<TileSheet>> TileSheets;
+extern Unique<TileSheet> GameTileSheet;
 extern std::unordered_map<std::string, Unique<Sound>> Sounds;
-extern std::string TileSheetName;
 
 extern QuickList<Entity*> Bullets;
 
-using EntityList = std::vector<Entity*>;
-
-extern EntityList Entities;
+extern QuickList<Entity*> Entities;
 
 void LoadResources();

@@ -5,7 +5,7 @@ void Shoot(SpaceshipWeaponCmpt& weapon, const Point& dir) {
 
     Point playerCenterPos = weapon.owner->Get<MoveCmpt>()->position;
 
-    auto bullet = weapon.ShootBullet(Normalize(dir) * weapon.shootSpeed);
+    auto bullet = weapon.ShootBullet(dir);
     Bullets.Add(bullet);
 
     weapon.coolDown = weapon.shootDuration;

@@ -1,8 +1,10 @@
 #pragma once
 
-constexpr float FreightMaxSpeed = 100;
+constexpr float FreightShipMaxSpeed = 100;
+constexpr float FightShipMaxSpeed = 300;
+constexpr int FreightLife = 10;
 constexpr float LazerDamage = 2;
-constexpr float LazerShooterSpeed = 1000;
+constexpr float LazerShooterSpeed = 500;
 constexpr float LazerShooterMaxSpeed = 1000;
 constexpr float LazerShooterCooldown = 0.3;
 constexpr int GameWindowWidth = 1024;

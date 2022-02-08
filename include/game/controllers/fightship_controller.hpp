@@ -6,9 +6,9 @@
 #include "game/component.hpp"
 #include "game/action.hpp"
 
-class FreeRotationController: public Controller {
+class FightShipController: public Controller {
 public:
-    FreeRotationController(Entity* entity);
+    FightShipController(Entity* entity);
     void Update(float dt) override;
 
 private:

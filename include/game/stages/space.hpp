@@ -4,7 +4,8 @@
 #include "game/global.hpp"
 #include "game/entity.hpp"
 #include "game/system.hpp"
-#include "game/controllers/spaceship_controller.hpp"
+#include "game/controllers/freightship_controller.hpp"
+#include "game/controllers/fightship_controller.hpp"
 
 class SpaceScence: public Scence {
 public:
@@ -15,5 +16,11 @@ public:
 
 private:
     Entity* spaceship_;
-    Unique<FreeRotationController> controller_;
+    Unique<FreightShipController> freightController_;
+    Unique<FightShipController> fightController_;
+
+    void renderGUI();
+
+    Camera guiCamera_;
+    Camera gameCamera_;
 };

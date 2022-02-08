@@ -2,14 +2,13 @@
 
 Context ECSContext;
 SystemManager SystemMgr;
-std::unordered_map<std::string, Unique<TileSheet>> TileSheets;
+Unique<TileSheet> GameTileSheet;
 std::unordered_map<std::string, Unique<Sound>> Sounds;
-std::string TileSheetName = "TileSheet";
 QuickList<Entity*> Bullets;
-EntityList Entities;
+QuickList<Entity*> Entities;
 
 void loadImages() {
-    TileSheets[TileSheetName] = std::make_unique<TileSheet>("assets/tilesheet.png", 8, 8);
+    GameTileSheet.reset(new TileSheet("assets/tilesheet.png", 8, 8));
 }
 
 void loadSounds() {

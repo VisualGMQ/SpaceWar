@@ -1,10 +1,10 @@
-#include "game/controllers/spaceship_controller.hpp"
+#include "game/controllers/freightship_controller.hpp"
 #include "tinyengine/event.hpp"
 
-FreeRotationController::FreeRotationController(Entity* entity)
+FreightShipController::FreightShipController(Entity* entity)
     : entity_(entity) {}
 
-void FreeRotationController::Update(float dt) {
+void FreightShipController::Update(float dt) {
     const float spd = 100;
     auto motionCmpt = entity_->Use<MotionCmpt>();
     if (IsKeyPressing(GLFW_KEY_A)) {

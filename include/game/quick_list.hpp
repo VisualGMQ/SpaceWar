@@ -9,11 +9,15 @@ public:
         datas_.push_back(elem);
     }
 
-    void RemoveAll(std::function<bool(const T&)> func) {
-        int idx = 0;
+    void RemoveAll(std::function<bool(const T&)> findFunc,
+                      std::function<void(const T&)> destroyFunc = nullptr) {
+        std::size_t idx = 0;
         while (idx < datas_.size()) {
-            if (func(datas_[idx]) && datas_.size() > idx) {
+            if (datas_.size() > idx && findFunc(datas_[idx])) {
                 std::swap(datas_[idx], datas_[datas_.size() - 1]);
+                if (destroyFunc) {
+                    destroyFunc(datas_.back());
+                }
                 datas_.pop_back();
             } else {
                 idx ++;

@@ -5,11 +5,11 @@
 
 class MoveCmpt: public Component {
 public:
-    void Init(const Point& p) { position = p; }
+    void Init(const Point& p) { position = p; oldPosition = position; }
     void Release() {}
 
     Point position;
-    Point oldPosition = {0, 0};
+    Point oldPosition;
 };
 
 class MotionCmpt: public Component {
@@ -17,11 +17,12 @@ public:
     void Init(const Point& spd, float maxSpd) {
         speed = spd;
         maxSpeed = maxSpd;
+        acceleration = {0, 0};
     }
     void Release() {}
 
     Point speed;
-    Point acceleration = {0, 0};
+    Point acceleration;
 
     float maxSpeed;
 };
@@ -32,6 +33,22 @@ public:
     void Release() {}
 
     Rect rect;
+};
+
+class FightShipCmpt: public Component {
+public:
+    void Init(float degree) {
+        this->degree = degree;
+    }
+    void Release() {}
+
+    float degree;
+};
+
+class FreightShipCmpt: public Component {
+public:
+    void Init() {}
+    void Release() {}
 };
 
 class SpaceshipWeaponCmpt: public Component {
@@ -116,6 +133,7 @@ public:
     inline void Init(int damage, Entity* owner) {
         this->owner = owner;
         this->damage = damage;
+        alive = true;
     }
     inline void Release() override {}
 

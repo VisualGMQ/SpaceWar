@@ -92,7 +92,7 @@ inline float Clamp(float min, float max, float value) {
 inline bool IsRectsIntersect(const Rect& r1, const Rect& r2) {
     return !(r1.x > r2.x + r2.w ||
              r1.x + r1.w < r2.x ||
-             r1.y > r2.x + r2.h ||
+             r1.y > r2.y + r2.h ||
              r1.y + r1.h < r2.y);
 }
 
@@ -147,6 +147,14 @@ inline Mat44 CreateOrthoMat(float left, float right,
 inline Point GetCenterAlign(const Rect& parent, const Size& child) {
     return Point{parent.x + (parent.w - child.w) / 2.0f,
                  parent.y + (parent.h - child.h) / 2.0f};
+}
+
+inline Point Rotate(const Point& v, float degree) {
+    float radians = Radians(degree);
+    float sinTheta = std::sin(radians),
+          cosTheta = std::cos(radians);
+    return Point{v.x * cosTheta - v.y * sinTheta,
+                 v.x * sinTheta + v.y * cosTheta};
 }
 
 inline Mat44 CreateSRT(const Point& pos, const Point& scale, float degree) {
