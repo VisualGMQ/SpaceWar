@@ -89,7 +89,6 @@ void Engine::Shutdown() {
 void Engine::Update(float deltaTime) {
     if (scence_)
         scence_->OnUpdate(deltaTime);
-    Renderer::Update();
 }
 
 void Engine::Render() {

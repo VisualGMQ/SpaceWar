@@ -6,7 +6,7 @@ Entity* CreateFreightShip() {
     entity->Add<MoveCmpt>(Point{0, 0});
     entity->Add<MotionCmpt>(Point{0, 0}, FreightShipMaxSpeed);
     entity->Add<RenderCmpt>(GameTileSheet->GetTile(0, 0));
-    entity->Add<SpaceshipWeaponCmpt>(SpaceshipWeaponCmpt::Orientation,
+    entity->Add<SpaceshipWeaponCmpt>(SpaceshipWeaponCmpt::FreeRotation,
                                      entity,
                                      LazerDamage,
                                      LazerShooterSpeed,

@@ -1,11 +1,16 @@
 #pragma once
 
+#include "tinyengine/libmath.hpp"
+
 constexpr float FreightShipMaxSpeed = 100;
-constexpr float FightShipMaxSpeed = 300;
+constexpr float FightShipMaxSpeed = 250;
 constexpr int FreightLife = 10;
 constexpr float LazerDamage = 2;
 constexpr float LazerShooterSpeed = 500;
 constexpr float LazerShooterMaxSpeed = 1000;
 constexpr float LazerShooterCooldown = 0.3;
-constexpr int GameWindowWidth = 1024;
-constexpr int GameWindowHeight = 720;
+
+constexpr Size GameWindowSize = {1024, 720};
+
+constexpr Rect BulletRefreshArea{-100, -100, 1124, 820};
+constexpr Rect SpaceshipRefreshArea{-1024 * 3, -720 * 3, 1024 * 4, 720 * 4};

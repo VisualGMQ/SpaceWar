@@ -30,8 +30,15 @@ void FreightShipController::Update(float dt) {
 
     if (IsLeftPressing()) {
         if (entity_->Has<SpaceshipWeaponCmpt>()) {
-            Shoot(*entity_->Use<SpaceshipWeaponCmpt>(),
-                  GetMousePosition() - entity_->Get<MoveCmpt>()->position);
+            // FIXME duplicated codes in here and fightship_controller.cpp
+            auto weapon = entity_->Use<SpaceshipWeaponCmpt>();
+            if (weapon->type == SpaceshipWeaponCmpt::Orientation) {
+                Shoot(*weapon,
+                      Rotate(Point{0, -1}, entity_->Get<FightShipCmpt>()->degree));
+            } else {
+                Shoot(*weapon,
+                      GetMousePosition() - entity_->Get<MoveCmpt>()->position);
+            }
         }
     }
 }

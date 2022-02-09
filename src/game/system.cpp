@@ -75,21 +75,26 @@ void CollideSystem::Update(float dt) {
 
 void CleanupSystem::Update(float dt) {
     using EntityPtr = Entity*;
+    auto destroyFunc = [&](const EntityPtr& entity){
+        ECSContext.DestroyEntity(entity);
+    };
+
     Bullets.RemoveAll([](const EntityPtr& entity){
-        return !entity->Get<BulletCmpt>()->alive || !IsPointInRect(entity->Get<MoveCmpt>()->position,
-                              Rect{0, 0, GameWindowWidth, GameWindowHeight});
-    });
+        return !entity->Get<BulletCmpt>()->alive ||
+               !IsPointInRect(MapGlobal2PlayerCoord(entity->Get<MoveCmpt>()->position),
+                              BulletRefreshArea);
+    }, destroyFunc);
+
     Entities.RemoveAll([](const EntityPtr& entity){
         if (entity->Has<LifeCmpt>() &&
-            entity->Get<LifeCmpt>()->hp <= 0) {
+            entity->Get<LifeCmpt>()->hp <= 0 ||
+            entity->Has<MoveCmpt>() &&
+            !IsPointInRect(MapGlobal2PlayerCoord(entity->Get<MoveCmpt>()->position), SpaceshipRefreshArea)) {
             return true;
         } else {
             return false;
         }
-    },
-    [&](const EntityPtr& entity){
-        ECSContext.DestroyEntity(entity);
-    });
+    }, destroyFunc);
 }
 
 void BulletCooldownSystem::Update(float dt) {

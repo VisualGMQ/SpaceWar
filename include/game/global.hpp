@@ -9,7 +9,9 @@ extern Unique<TileSheet> GameTileSheet;
 extern std::unordered_map<std::string, Unique<Sound>> Sounds;
 
 extern QuickList<Entity*> Bullets;
-
 extern QuickList<Entity*> Entities;
 
+extern Entity* PlayerSpaceship;
+
 void LoadResources();
+Point MapGlobal2PlayerCoord(const Point& pos);

@@ -15,11 +15,11 @@ public:
     void OnQuit() override;
 
 private:
-    Entity* spaceship_;
     Unique<FreightShipController> freightController_;
     Unique<FightShipController> fightController_;
 
     void renderGUI();
+    void renderMiniMap();
 
     Camera guiCamera_;
     Camera gameCamera_;

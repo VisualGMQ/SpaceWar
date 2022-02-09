@@ -47,7 +47,6 @@ public:
     static void SetViewport(int x, int y, int w, int h);
     static const Color& GetDrawColor();
     static void SetCamera(Camera& camera);
-    static void Update();
 
 private:
     static Color color_;

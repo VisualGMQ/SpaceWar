@@ -9,11 +9,13 @@ public:
     void MoveTo(const Point& pos);
     /* scale screen in [1.0, 2.0] */
     void Scale(const Point& scale);
+    void SetAnchor(const Point& anchor);
     bool TryCalcView();
 
 private:
     Mat44 viewMat_;
     Point position_ = {0, 0};
     Point scale_ = {1, 1};
-    bool dirty_ = false;
+    Point anchor_ = {0, 0};
+    bool dirty_ = true;
 };

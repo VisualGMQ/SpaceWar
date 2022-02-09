@@ -10,6 +10,8 @@ void GameLogoScence::OnInit() {
     initTime_ = GetTime();
     sound_.reset(new Sound("assets/1mgame_sound.wav"));
     soundPlayed_ = false;
+
+    Renderer::SetCamera(camera_);
 }
 
 void GameLogoScence::OnRender() {

@@ -3,8 +3,8 @@
 bool Camera::TryCalcView() {
     if (dirty_) {
         viewMat_ = Mat44({
-                    scale_.x,        0, 0, -position_.x,
-                           0, scale_.y, 0, -position_.y,
+                    scale_.x,        0, 0, -position_.x + anchor_.x,
+                           0, scale_.y, 0, -position_.y + anchor_.y,
                            0,        0, 1,            0,
                            0,        0, 0,            1,
                 });
@@ -28,5 +28,10 @@ void Camera::MoveTo(const Point& pos) {
 void Camera::Scale(const Point& scale) {
     scale_.x = Clamp(1.0f, 2.0f, scale.x);
     scale_.y = Clamp(1.0f, 2.0f, scale.y);
+    dirty_ = true;
+}
+
+void Camera::SetAnchor(const Point& anchor) {
+    anchor_ = anchor;
     dirty_ = true;
 }

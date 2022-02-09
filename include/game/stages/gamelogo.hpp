@@ -7,7 +7,7 @@ public:
     void OnRender() override;
 
 private:
-    Camera camera;
+    Camera camera_;
     float initTime_;
     Unique<Sound> sound_;
     bool soundPlayed_;

@@ -229,14 +229,8 @@ void Renderer::SetViewport(int x, int y, int w, int h) {
 
 void Renderer::SetCamera(Camera& camera) {
     Context.camera = &camera;
-}
-
-void Renderer::Update() {
-    if (Context.camera && Context.camera->TryCalcView()) {
-        Context.shader->SetMat4("view", Context.camera->GetView());
-    } else {
-        Context.shader->SetMat4("view", Mat44::Eye);
-    }
+    Context.camera->TryCalcView();
+    Context.shader->SetMat4("view", Context.camera->GetView());
 }
 
 void Renderer::Shutdown() {
