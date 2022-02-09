@@ -31,3 +31,11 @@ Point MapGlobal2PlayerCoord(const Point& pos) {
         return pos;
     }
 }
+
+Point MapPlayerCoord2Global(const Point& pos) {
+    if (PlayerSpaceship && PlayerSpaceship->Has<MoveCmpt>()) {
+        return pos + PlayerSpaceship->Get<MoveCmpt>()->position - GameWindowSize / 2;
+    } else {
+        return pos;
+    }
+}

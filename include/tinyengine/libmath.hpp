@@ -125,11 +125,15 @@ inline double Radians(double degree) {
     return degree * M_PI / 180.0;
 }
 
-inline double Degress(double radians) {
+inline double Degrees(double radians) {
     return radians * 180.0 / M_PI;
 }
 
-inline double Cross2D(const Point& v1, const Point& v2) {
+inline double Dot(const Point& v1, const Point& v2) {
+    return v1.x * v2.x + v1.y * v2.y;
+}
+
+inline double Cross(const Point& v1, const Point& v2) {
     return v1.x * v2.y - v2.x * v1.y;
 }
 

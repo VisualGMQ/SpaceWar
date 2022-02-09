@@ -37,6 +37,38 @@ void PhysicalSystem::physicalStep(Entity* entity,
     motionCmpt.acceleration = Point{0, 0};
 }
 
+void MissileUpdateSystem::Update(float dt) {
+    for (auto& bullet : Bullets) {
+        if (bullet->Get<BulletCmpt>()->type == BulletCmpt::Missile) {
+            updateMissile(dt,
+                          *bullet->Use<BulletCmpt>(),
+                          *bullet->Use<MoveCmpt>(),
+                          *bullet->Use<MotionCmpt>());
+        }
+    }
+}
+
+void MissileUpdateSystem::updateMissile(float dt,
+                                        BulletCmpt& bullet,
+                                        MoveCmpt& move,
+                                        MotionCmpt& motion) {
+    if (bullet.target) {
+        if (!bullet.target->IsAlive()) {
+            bullet.target = nullptr;
+        } else {
+            Point v = bullet.target->Get<MoveCmpt>()->position - move.position;
+            float cross = Cross(motion.speed, v);
+            if (cross > 0) {
+                bullet.rotation -= MissileRotateDegree * dt;
+            } else {
+                bullet.rotation += MissileRotateDegree * dt;
+            }
+            Point dir = Rotate(Point{0, -1}, -bullet.rotation);
+            motion.speed = dir * Len(motion.speed);
+        }
+    }
+}
+
 void ColliRectCorrectSystem::Update(float dt) {
     for (auto& entity: Entities) {
         if (entity->Has<CollisionCmpt, MoveCmpt>()) {
@@ -89,7 +121,8 @@ void CleanupSystem::Update(float dt) {
         if (entity->Has<LifeCmpt>() &&
             entity->Get<LifeCmpt>()->hp <= 0 ||
             entity->Has<MoveCmpt>() &&
-            !IsPointInRect(MapGlobal2PlayerCoord(entity->Get<MoveCmpt>()->position), SpaceshipRefreshArea)) {
+            !IsPointInRect(MapGlobal2PlayerCoord(entity->Get<MoveCmpt>()->position),
+                           SpaceshipRefreshArea)) {
             return true;
         } else {
             return false;
@@ -97,27 +130,44 @@ void CleanupSystem::Update(float dt) {
     }, destroyFunc);
 }
 
-void BulletCooldownSystem::Update(float dt) {
+void WeaponCooldownSystem::Update(float dt) {
     for (auto& entity : Entities) {
-        if (entity->Has<SpaceshipWeaponCmpt>()) {
-            auto weapon = entity->Use<SpaceshipWeaponCmpt>();
-            if (weapon->coolDown >= 0) {
-                weapon->coolDown -= dt;
-            }
+        if (entity->Has<FreightShipCmpt>()) {
+            auto weapon = entity->Use<FreightShipCmpt>()->weapon;
+            coolDown(*weapon, dt);
         }
+        if (entity->Has<FightShipCmpt>()) {
+            auto fightShip = entity->Use<FightShipCmpt>();
+            coolDown(*fightShip->weapon1, dt);
+            coolDown(*fightShip->weapon2, dt);
+        }
+    }
+}
+
+void WeaponCooldownSystem::coolDown(SpaceshipWeaponCmpt& weapon, float dt) {
+    if (weapon.coolDown >= 0) {
+        weapon.coolDown -= dt;
     }
 }
 
 void RenderEntitySystem::Render() {
     for (auto& entity: Entities) {
         if (entity->Has<RenderCmpt>()) {
-            renderEntity(entity, *entity->Get<RenderCmpt>());
+            float rotation = 0;
+            if (entity->Has<FightShipCmpt>()) {
+                rotation = entity->Get<FightShipCmpt>()->degree;
+            }
+            renderEntity(entity, *entity->Get<RenderCmpt>(), rotation);
             renderCollideBox(entity);
         }
     }
-    
+
     for (auto& bullet: Bullets) {
-        renderEntity(bullet, *bullet->Get<RenderCmpt>());
+        float rotation = 0;
+        if (bullet->Get<BulletCmpt>()->type == BulletCmpt::Missile) {
+            rotation = bullet->Get<BulletCmpt>()->rotation;
+        }
+        renderEntity(bullet, *bullet->Get<RenderCmpt>(), rotation);
         renderCollideBox(bullet);
     }
 }
@@ -129,24 +179,20 @@ void RenderEntitySystem::renderCollideBox(Entity* entity) {
     }
 }
 
-void RenderEntitySystem::renderEntity(Entity* entity, const RenderCmpt& renderCmpt) {
+void RenderEntitySystem::renderEntity(Entity* entity, const RenderCmpt& renderCmpt, float rotation) {
     if (entity->Has<MoveCmpt>()) {
         auto& pos = entity->Get<MoveCmpt>()->position;
-        float degree = 0;
-        if (entity->Has<FightShipCmpt>()) {
-            degree = entity->Get<FightShipCmpt>()->degree;
-        }
         if (renderCmpt.type == RenderCmpt::TypeTexture) {
             Renderer::DrawTexture(renderCmpt.texture,
                                   nullptr,
                                   pos,
                                   Size{0, 0},
-                                  degree);
+                                  rotation);
         } else {
             Renderer::DrawTile(renderCmpt.tile,
                                pos,
                                Size{0, 0},
-                               degree);
+                               rotation);
         }
     }
 }

@@ -5,3 +5,4 @@
 #include "game/entity.hpp"
 
 void Shoot(SpaceshipWeaponCmpt& weapon, const Point& dir);
+void Shoot(SpaceshipWeaponCmpt& weapon, const Point& dir, Entity* target);

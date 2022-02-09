@@ -29,7 +29,8 @@ void SpaceScence::OnInit() {
     gameCamera_.SetAnchor(GameWindowSize / 2);
 
     SystemMgr.Clear();
-    SystemMgr.AddUpdateSystem(new BulletCooldownSystem);
+    SystemMgr.AddUpdateSystem(new WeaponCooldownSystem);
+    SystemMgr.AddUpdateSystem(new MissileUpdateSystem);
     SystemMgr.AddUpdateSystem(new PhysicalSystem);
     SystemMgr.AddUpdateSystem(new ColliRectCorrectSystem);
     SystemMgr.AddUpdateSystem(new CollideSystem);
@@ -62,6 +63,12 @@ void SpaceScence::renderGUI() {
     }
 
     renderMiniMap();
+    if (PlayerSpaceship->Has<FreightShipCmpt>()) {
+        renderWeapons(PlayerSpaceship->Get<FreightShipCmpt>()->weapon, nullptr);
+    } else {
+        auto fightShip = PlayerSpaceship->Get<FightShipCmpt>();
+        renderWeapons(fightShip->weapon1, fightShip->weapon2);
+    }
 }
 
 void SpaceScence::renderMiniMap() {
@@ -88,6 +95,35 @@ void SpaceScence::renderMiniMap() {
             }
         }
     }
+}
+
+void SpaceScence::renderWeapons(SpaceshipWeaponCmpt* weapon1, SpaceshipWeaponCmpt* weapon2) {
+    Rect mapRect = {0, 0, 200, 100};
+    mapRect.y = GameWindowSize.h - mapRect.h;
+    mapRect.x = GameWindowSize.w - mapRect.w - 1;
+
+    Renderer::SetDrawColor(Color{0, 0, 0, 255});
+    Renderer::FillRect(mapRect);
+    Renderer::SetDrawColor(Color{255, 255, 255, 255});
+    Renderer::DrawRect(mapRect);
+
+    Point offset = {10, 10};
+    auto& font = engine.GetInnerBmpFont();
+
+    if (weapon1) {
+        font.Render(weapon1->name,
+                    20,
+                    Point{mapRect.x, mapRect.y} + offset,
+                    Color{0, 200, 0, 255});
+        offset.y += 20;
+    }
+    if (weapon2) {
+        font.Render(weapon2->name,
+                    20,
+                    Point{mapRect.x, mapRect.y} + offset,
+                    Color{0, 50, 0, 255});
+    }
+
 }
 
 void SpaceScence::OnQuit() {

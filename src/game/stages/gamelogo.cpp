@@ -1,4 +1,5 @@
 #include "game/stages/gamelogo.hpp"
+#include "game/stages/space.hpp"
 
 constexpr float TitlePixel = 40.0f;
 constexpr float AuthorInfoPixel = 20.0f;
@@ -37,5 +38,9 @@ void GameLogoScence::OnRender() {
                                                            engine.GetWindowSize().h},
                                                        Size{AuthorInfoPixel * strlen(AuthorInfo), AuthorInfoPixel}),
                                         Color{0.5, 0.5, 0.5, 1});
+    }
+
+    if (duration > 4) {
+        engine.ChangeScence(new SpaceScence);
     }
 }

@@ -14,6 +14,14 @@ private:
     void physicalStep(Entity* entity, float dt, MoveCmpt&, MotionCmpt&);
 };
 
+class MissileUpdateSystem: public UpdateSystem {
+public:
+    void Update(float dt) override;
+
+private:
+    void updateMissile(float dt, BulletCmpt&, MoveCmpt&, MotionCmpt&);
+};
+
 class ColliRectCorrectSystem: public UpdateSystem {
 public:
     void Update(float dt) override;
@@ -32,9 +40,12 @@ public:
     void Update(float dt) override;
 };
 
-class BulletCooldownSystem: public UpdateSystem {
+class WeaponCooldownSystem: public UpdateSystem {
 public:
     void Update(float dt) override;
+
+private:
+    void coolDown(SpaceshipWeaponCmpt& weapon, float dt);
 };
 
 class RenderEntitySystem: public RenderSystem {
@@ -42,6 +53,6 @@ public:
     void Render() override;
 
 private:
-    void renderEntity(Entity* entity, const RenderCmpt&);
+    void renderEntity(Entity* entity, const RenderCmpt&, float rotation);
     void renderCollideBox(Entity* entity);
 };

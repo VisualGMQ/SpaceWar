@@ -15,3 +15,4 @@ extern Entity* PlayerSpaceship;
 
 void LoadResources();
 Point MapGlobal2PlayerCoord(const Point& pos);
+Point MapPlayerCoord2Global(const Point& pos);

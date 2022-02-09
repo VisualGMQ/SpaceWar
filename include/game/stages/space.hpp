@@ -20,6 +20,7 @@ private:
 
     void renderGUI();
     void renderMiniMap();
+    void renderWeapons(SpaceshipWeaponCmpt* weapon1, SpaceshipWeaponCmpt* weapon2);
 
     Camera guiCamera_;
     Camera gameCamera_;

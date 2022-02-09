@@ -2,6 +2,7 @@
 
 #include "tinyengine/tinyengine.hpp"
 #include "game/constants.hpp"
+#include "game/global.hpp"
 
 class MoveCmpt: public Component {
 public:
@@ -35,21 +36,32 @@ public:
     Rect rect;
 };
 
-class FightShipCmpt: public Component {
+class BulletCmpt: public Component {
 public:
-    void Init(float degree) {
-        this->degree = degree;
+    enum Type {
+        Bullet = 1,
+        Missile,
+    };
+
+    inline void Init(Type type, int damage, Entity* owner, Entity* target = nullptr) {
+        this->owner = owner;
+        this->damage = damage;
+        this->target = target;
+        this->type = type;
+        rotation = 0;
+        alive = true;
     }
-    void Release() {}
+    inline void Release() override {}
 
-    float degree;
+    Type type;
+    int damage;
+    Entity* owner;
+    Entity* target;
+    float rotation;
+    bool alive;
 };
 
-class FreightShipCmpt: public Component {
-public:
-    void Init() {}
-    void Release() {}
-};
+
 
 class SpaceshipWeaponCmpt: public Component {
 public:
@@ -58,25 +70,33 @@ public:
         FreeRotation = 0x02,
     };
 
-    void Init(Type type,
+    void Init(const std::string& name,
+              Type type,
+              BulletCmpt::Type bulletType,
               Entity* owner,
               int damage,
               float shootSpeed,
               float maxSpeed,
               float duration) {
+        this->name = name;
         this->type = type;
+        this->bulletType = bulletType;
         this->owner = owner;
         this->damage = damage;
         this->shootSpeed = shootSpeed;
         this->shootDuration = duration;
+        this->coolDown = 0;
         this->maxSpeed = maxSpeed;
     }
 
     void Release() {}
     bool IsCoolDowning() const { return coolDown >= 0; }
     Entity* ShootBullet(const Point& dir);
+    Entity* ShootMissile(const Point& dir, Entity* target);
 
     Type type;
+    BulletCmpt::Type bulletType;
+    std::string name;
     int damage;
     float shootSpeed;
     float shootDuration;
@@ -94,6 +114,34 @@ public:
 
     int defence;
     float recoverDuration;
+};
+
+class FreightShipCmpt: public Component {
+public:
+    void Init(SpaceshipWeaponCmpt* weapon) {
+        this->weapon = weapon;
+    }
+    void Release() { ECSContext.DestroyComponent(weapon); }
+
+    SpaceshipWeaponCmpt* weapon;
+};
+
+
+class FightShipCmpt: public Component {
+public:
+    void Init(SpaceshipWeaponCmpt* weapon1, SpaceshipWeaponCmpt* weapon2) {
+        this->degree = 0;
+        this->weapon1 = weapon1;
+        this->weapon2 = weapon2;
+    }
+    void Release() {
+        ECSContext.DestroyComponent(weapon1);
+        ECSContext.DestroyComponent(weapon2);
+    }
+
+    float degree;
+    SpaceshipWeaponCmpt* weapon1;
+    SpaceshipWeaponCmpt* weapon2;
 };
 
 class LifeCmpt: public Component {
@@ -128,16 +176,3 @@ public:
     };
 };
 
-class BulletCmpt: public Component {
-public:
-    inline void Init(int damage, Entity* owner) {
-        this->owner = owner;
-        this->damage = damage;
-        alive = true;
-    }
-    inline void Release() override {}
-
-    int damage;
-    Entity* owner;
-    bool alive;
-};

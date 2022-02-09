@@ -6,4 +6,5 @@
 
 Entity* CreateFreightShip();
 Entity* CreateFightShip();
-Entity* CreateBullet(int damage, Entity* owner, float maxSpeedß);
+Entity* CreateBullet(int damage, Entity* owner, float maxSpeed);
+Entity* CreateMissile(int damage, Entity* owner, float maxSpeed, Entity* target);

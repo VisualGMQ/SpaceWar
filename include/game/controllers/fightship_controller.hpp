@@ -13,4 +13,6 @@ public:
 
 private:
     Entity* entity_;
+
+    void weaponShoot(SpaceshipWeaponCmpt* weapon, const MoveCmpt& move);
 };
