@@ -70,6 +70,8 @@ public:
         FreeRotation = 0x02,
     };
 
+    static constexpr int InfBullet = -1;
+
     void Init(const std::string& name,
               Type type,
               BulletCmpt::Type bulletType,
@@ -77,7 +79,8 @@ public:
               int damage,
               float shootSpeed,
               float maxSpeed,
-              float duration) {
+              float duration,
+              int bulletAmount = InfBullet) {
         this->name = name;
         this->type = type;
         this->bulletType = bulletType;
@@ -87,6 +90,7 @@ public:
         this->shootDuration = duration;
         this->coolDown = 0;
         this->maxSpeed = maxSpeed;
+        this->bulletAmount = bulletAmount;
     }
 
     void Release() {}
@@ -103,6 +107,7 @@ public:
     float coolDown;
     float maxSpeed;
     Entity* owner;
+    int bulletAmount;
 };
 
 class SpaceshipArmorCmpt: public Component {

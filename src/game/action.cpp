@@ -9,11 +9,11 @@ void Shoot(SpaceshipWeaponCmpt& weapon, const Point& dir) {
 
     Entity* bullet;
     bullet = weapon.ShootBullet(dir);
-    Bullets.Add(bullet);
-
-    weapon.coolDown = weapon.shootDuration;
-
-    Sounds["shoot"]->Play();
+    if (bullet) {
+        Bullets.Add(bullet);
+        weapon.coolDown = weapon.shootDuration;
+        Sounds["shoot"]->Play();
+    }
 }
 
 void Shoot(SpaceshipWeaponCmpt& weapon, const Point& dir, Entity* target) {
@@ -25,14 +25,12 @@ void Shoot(SpaceshipWeaponCmpt& weapon, const Point& dir, Entity* target) {
 
     Entity* bullet;
     bullet = weapon.ShootMissile(dir, target);
-
-    // FIXME the rotation have some bugs
-    bullet->Use<BulletCmpt>()->rotation = Degrees(std::acos(-Normalize(dir).y));
-
-    Bullets.Add(bullet);
-
-    weapon.coolDown = weapon.shootDuration;
-
-    Sounds["shoot"]->Play();
+    if (bullet) {
+        // FIXME the rotation have some bugs
+        bullet->Use<BulletCmpt>()->rotation = Degrees(std::acos(-Normalize(dir).y));
+        Bullets.Add(bullet);
+        weapon.coolDown = weapon.shootDuration;
+        Sounds["shoot"]->Play();
+    }
 }
 

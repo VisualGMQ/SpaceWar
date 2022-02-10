@@ -87,6 +87,7 @@ void Engine::Shutdown() {
 }
 
 void Engine::Update(float deltaTime) {
+    deltaTime = std::min(deltaTime, 0.3f);
     if (scence_)
         scence_->OnUpdate(deltaTime);
 }

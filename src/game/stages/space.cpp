@@ -98,14 +98,14 @@ void SpaceScence::renderMiniMap() {
 }
 
 void SpaceScence::renderWeapons(SpaceshipWeaponCmpt* weapon1, SpaceshipWeaponCmpt* weapon2) {
-    Rect mapRect = {0, 0, 200, 100};
-    mapRect.y = GameWindowSize.h - mapRect.h;
-    mapRect.x = GameWindowSize.w - mapRect.w - 1;
+    Rect weaponInfoRect = {0, 0, 300, 100};
+    weaponInfoRect.y = GameWindowSize.h - weaponInfoRect.h;
+    weaponInfoRect.x = GameWindowSize.w - weaponInfoRect.w - 1;
 
-    Renderer::SetDrawColor(Color{0, 0, 0, 255});
-    Renderer::FillRect(mapRect);
-    Renderer::SetDrawColor(Color{255, 255, 255, 255});
-    Renderer::DrawRect(mapRect);
+    Renderer::SetDrawColor(Color{0, 0, 0, 1});
+    Renderer::FillRect(weaponInfoRect);
+    Renderer::SetDrawColor(Color{1, 1, 1, 1});
+    Renderer::DrawRect(weaponInfoRect);
 
     Point offset = {10, 10};
     auto& font = engine.GetInnerBmpFont();
@@ -113,15 +113,28 @@ void SpaceScence::renderWeapons(SpaceshipWeaponCmpt* weapon1, SpaceshipWeaponCmp
     if (weapon1) {
         font.Render(weapon1->name,
                     20,
-                    Point{mapRect.x, mapRect.y} + offset,
-                    Color{0, 200, 0, 255});
+                    Point{weaponInfoRect.x, weaponInfoRect.y} + offset,
+                    Color{0, 0.8, 0, 1});
+        if (weapon1->bulletAmount != SpaceshipWeaponCmpt::InfBullet) {
+            font.Render("[" + std::to_string(weapon1->bulletAmount) + "]",
+                        20,
+                        Point{weaponInfoRect.x + weaponInfoRect.w - 50, weaponInfoRect.y} + offset,
+                        Color{0, 0.8, 0, 1});
+        }
         offset.y += 20;
     }
     if (weapon2) {
         font.Render(weapon2->name,
                     20,
-                    Point{mapRect.x, mapRect.y} + offset,
-                    Color{0, 50, 0, 255});
+                    Point{weaponInfoRect.x, weaponInfoRect.y} + offset,
+                    Color{0, 0.8, 0, 1});
+
+        if (weapon2->bulletAmount != SpaceshipWeaponCmpt::InfBullet) {
+            font.Render("[" + std::to_string(weapon2->bulletAmount) + "]",
+                        20,
+                        Point{weaponInfoRect.x + weaponInfoRect.w - 100, weaponInfoRect.y} + offset,
+                        Color{0, 0.8, 0, 1});
+        }
     }
 
 }

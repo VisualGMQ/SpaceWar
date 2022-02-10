@@ -1,6 +1,11 @@
 #include "tinyengine/event.hpp"
 #include "tinyengine/engine.hpp"
 
+struct {
+    bool left = false;
+    bool right = false;
+} MouseState;
+
 void OnWindowResize(GLFWwindow* window, int width, int height) {
     Renderer::SetViewport(0, 0, width, height);
 }

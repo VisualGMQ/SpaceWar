@@ -41,7 +41,8 @@ Entity* CreateFightShip() {
                                                                    LazerDamage,
                                                                    LazerShooterSpeed,
                                                                    LazerShooterMaxSpeed,
-                                                                   LazerShooterCooldown);
+                                                                   LazerShooterCooldown,
+                                                                   10);
 
     entity->Add<CollisionCmpt>(Size{16, 16});
     entity->Add<LifeCmpt>(FreightLife);

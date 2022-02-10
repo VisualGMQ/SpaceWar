@@ -14,7 +14,7 @@ public:
     void Init(const std::string& title, const Size& size, Scence* scence);
     void Shutdown();
 
-    void Exit() { shouldExit_ = true; }
+    void Exit() { glfwSetWindowShouldClose(window_, 1); }
     bool ShouldExit() const { return glfwWindowShouldClose(window_); }
 
     void Update(float deltaTime);
