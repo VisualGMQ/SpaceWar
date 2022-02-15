@@ -4,7 +4,7 @@
 #include "game/component.hpp"
 #include "game/global.hpp"
 
-Entity* CreateFreightShip();
-Entity* CreateFightShip();
-Entity* CreateBullet(int damage, Entity* owner, float maxSpeed);
-Entity* CreateMissile(int damage, Entity* owner, float maxSpeed, Entity* target);
+Entity* CreateFreightShip(int group);
+Entity* CreateFightShip(int group);
+Entity* CreateBullet(int group, int damage, Entity* owner, float maxSpeed);
+Entity* CreateMissile(int group, int damage, Entity* owner, float maxSpeed, Entity* target);

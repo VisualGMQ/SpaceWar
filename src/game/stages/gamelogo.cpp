@@ -1,5 +1,5 @@
 #include "game/stages/gamelogo.hpp"
-#include "game/stages/space.hpp"
+#include "game/stages/welcome.hpp"
 
 constexpr float TitlePixel = 40.0f;
 constexpr float AuthorInfoPixel = 20.0f;
@@ -41,6 +41,6 @@ void GameLogoScence::OnRender() {
     }
 
     if (duration > 4) {
-        engine.ChangeScence(new SpaceScence);
+        engine.ChangeScence(new WelcomeScence);
     }
 }

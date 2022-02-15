@@ -7,33 +7,38 @@ FightShipController::FightShipController(Entity* entity)
 void FightShipController::Update(float dt) {
     const float spd = 100;
     auto motionCmpt = entity_->Use<MotionCmpt>();
-    float& rotation = entity_->Use<FightShipCmpt>()->degree;
+    auto ship = entity_->Use<FightShipCmpt>();
     if (IsKeyPressing(GLFW_KEY_A)) {
-        rotation += 2;
+        TurnLeft(*ship);
     }
     if (IsKeyPressing(GLFW_KEY_D)) {
-        rotation -= 2;
+        TurnRight(*ship);
     }
     if (IsKeyPressing(GLFW_KEY_S)) {
-        motionCmpt->acceleration = Rotate(Point{0, spd}, -rotation);
+        SpeedUp(*motionCmpt, *ship);
     }
     if (IsKeyPressing(GLFW_KEY_W)) {
-        motionCmpt->acceleration = Rotate(Point{0, -spd}, -rotation);
+        SpeedDown(*motionCmpt, *ship);
     }
 
     motionCmpt->speed = Rotate(Point{0, -1} * Len(motionCmpt->speed),
-                               -rotation);
+                               -ship->degree);
 
-    auto fightShip = entity_->Use<FightShipCmpt>();
-    auto weapon1 = fightShip->weapon1,
-         weapon2 = fightShip->weapon2;
     auto moveCmpt = entity_->Get<MoveCmpt>();
 
     if (IsLeftPressing()) {
-        weaponShoot(weapon1, *moveCmpt);
+        if (entity_->Has<FightShipCmpt>()) {
+            weaponShoot(entity_->Use<FightShipCmpt>()->weapon1, *moveCmpt);
+        } else if (entity_->Has<FreightShipCmpt>()) {
+            weaponShoot(entity_->Use<FreightShipCmpt>()->weapon, *moveCmpt);
+        }
     }
     if (IsRightPressing()) {
-        weaponShoot(weapon2, *moveCmpt);
+        if (entity_->Has<FightShipCmpt>()) {
+            weaponShoot(entity_->Use<FightShipCmpt>()->weapon2, *moveCmpt);
+        } else if (entity_->Has<FreightShipCmpt>()) {
+            weaponShoot(entity_->Use<FreightShipCmpt>()->weapon, *moveCmpt);
+        }
     }
 }
 

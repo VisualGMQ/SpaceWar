@@ -133,3 +133,5 @@ private:
         }
     }
 };
+
+using EntityPtr = Entity*;

@@ -34,3 +34,36 @@ void Shoot(SpaceshipWeaponCmpt& weapon, const Point& dir, Entity* target) {
     }
 }
 
+void MoveLeft(MotionCmpt& motion) {
+    motion.acceleration += Point{-FreightShipAccelerate, 0};
+}
+
+void MoveRight(MotionCmpt& motion) {
+    motion.acceleration += Point{FreightShipAccelerate, 0};
+}
+
+void MoveUp(MotionCmpt& motion) {
+    motion.acceleration += Point{0, -FreightShipAccelerate};
+}
+
+void MoveDown(MotionCmpt& motion) {
+    motion.acceleration += Point{0, FreightShipAccelerate};
+}
+
+void SpeedUp(MotionCmpt& motion, FightShipCmpt& ship) {
+    motion.acceleration = Rotate(Point{0, FightShipAccelration},
+                                 -ship.degree);
+}
+
+void SpeedDown(MotionCmpt& motion, FightShipCmpt& ship) {
+    motion.acceleration = Rotate(Point{0, -FightShipAccelration},
+                                 -ship.degree);
+}
+
+void TurnLeft(FightShipCmpt& ship) {
+    ship.degree += FightShipRotationDegree;
+}
+
+void TurnRight(FightShipCmpt& ship) {
+    ship.degree -= FightShipRotationDegree;
+}

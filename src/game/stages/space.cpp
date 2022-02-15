@@ -2,40 +2,64 @@
 
 void SpaceScence::OnInit() {
     Renderer::SetClearColor(Color{0, 0, 0, 255});
-    LoadResources();
 
     Entities.Clear();
     Bullets.Clear();
 
-    PlayerSpaceship = CreateFightShip();
+    PlayerSpaceship = CreateFightShip(PlayerGroup);
     Entities.Add(PlayerSpaceship);
     PlayerSpaceship->Use<MoveCmpt>()->position = Point{400, 400};
 
-    Entity* enemy = CreateFreightShip();
+    Entity* enemy = CreateFreightShip(Enemy1Group);
+    enemy->Add<AICmpt>(FreightShipAI);
     enemy->Use<MoveCmpt>()->position = Point{100, 100};
     Entities.Add(enemy);
 
-    enemy = CreateFreightShip();
+    enemy = CreateFreightShip(Enemy1Group);
+    enemy->Add<AICmpt>(FreightShipAI);
     enemy->Use<MoveCmpt>()->position = Point{200, 100};
     Entities.Add(enemy);
 
-    enemy = CreateFreightShip();
+    enemy = CreateFreightShip(Enemy1Group);
+    enemy->Add<AICmpt>(FreightShipAI);
     enemy->Use<MoveCmpt>()->position = Point{100, 200};
     Entities.Add(enemy);
 
-    // freightController_.reset(new FreightShipController(spaceship_));
+    // Entity* enemy = CreateFightShip(Enemy1Group);
+    // enemy->Add<AICmpt>(FightShipAI);
+    // enemy->Use<MoveCmpt>()->position = Point{100, 100};
+    // Entities.Add(enemy);
+
+    // enemy = CreateFightShip(Enemy1Group);
+    // enemy->Add<AICmpt>(FightShipAI);
+    // enemy->Use<MoveCmpt>()->position = Point{200, 100};
+    // Entities.Add(enemy);
+
+    // enemy = CreateFightShip(Enemy1Group);
+    // enemy->Add<AICmpt>(FightShipAI);
+    // enemy->Use<MoveCmpt>()->position = Point{100, 200};
+    // Entities.Add(enemy);
+
     fightController_.reset(new FightShipController(PlayerSpaceship));
 
     gameCamera_.SetAnchor(GameWindowSize / 2);
 
     SystemMgr.Clear();
+    SystemMgr.AddUpdateSystem(new AIUpdateSystem);
     SystemMgr.AddUpdateSystem(new WeaponCooldownSystem);
+    SystemMgr.AddUpdateSystem(new EnergyProductSystem);
     SystemMgr.AddUpdateSystem(new MissileUpdateSystem);
     SystemMgr.AddUpdateSystem(new PhysicalSystem);
     SystemMgr.AddUpdateSystem(new ColliRectCorrectSystem);
     SystemMgr.AddUpdateSystem(new CollideSystem);
     SystemMgr.AddUpdateSystem(new CleanupSystem);
     SystemMgr.AddRenderSystem(new RenderEntitySystem);
+
+    for (int i = 0; i < 100; i++) {
+        Point p{Random<float>(0, GameWindowSize.w),
+                Random<float>(0, GameWindowSize.h)};
+        stars_.push_back(p);
+    }
 }
 
 void SpaceScence::OnUpdate(float dt) {
@@ -46,10 +70,31 @@ void SpaceScence::OnUpdate(float dt) {
 
 void SpaceScence::OnRender() {
     Renderer::SetCamera(gameCamera_);
+    renderBackground();
     SystemMgr.Render();
 
     Renderer::SetCamera(guiCamera_);
     renderGUI();
+}
+
+void SpaceScence::renderBackground() {
+    Renderer::SetDrawColor(Color{1, 1, 1, 1});
+
+    Point p;
+    p.x = std::floor(gameCamera_.GetPosition().x / GameWindowSize.w) * GameWindowSize.w;
+    p.y = std::floor(gameCamera_.GetPosition().y / GameWindowSize.h) * GameWindowSize.h;
+
+    for (auto& star : stars_) {
+        Point pos{p.x + star.x, p.y + star.y};
+        if (pos.x < gameCamera_.GetPosition().x) {
+            pos.x += GameWindowSize.w;
+        }
+        if (pos.y < gameCamera_.GetPosition().y) {
+            pos.y += GameWindowSize.h;
+        }
+        Rect drawrect = {pos.x - GameWindowSize.w / 2, pos.y - GameWindowSize.h / 2, 2, 2};
+        Renderer::FillRect(drawrect);
+    }
 }
 
 void SpaceScence::renderGUI() {
@@ -123,6 +168,7 @@ void SpaceScence::renderWeapons(SpaceshipWeaponCmpt* weapon1, SpaceshipWeaponCmp
         }
         offset.y += 20;
     }
+
     if (weapon2) {
         font.Render(weapon2->name,
                     20,
@@ -135,8 +181,18 @@ void SpaceScence::renderWeapons(SpaceshipWeaponCmpt* weapon1, SpaceshipWeaponCmp
                         Point{weaponInfoRect.x + weaponInfoRect.w - 100, weaponInfoRect.y} + offset,
                         Color{0, 0.8, 0, 1});
         }
+        offset.y += 20;
     }
 
+    // font.Render("ENERGY",
+    //             20,
+    //             Point{weaponInfoRect.x, weaponInfoRect.y} + offset,
+    //             Color{0.9, 0.3, 0.83, 1});
+    // std::string energyAmount = std::to_string(PlayerCore->Get<EnergyProductCmpt>()->amount);
+    // font.Render(energyAmount,
+    //             20,
+    //             Point{weaponInfoRect.x + weaponInfoRect.w - 20 - 20 * energyAmount.size(), weaponInfoRect.y} + offset,
+    //             Color{0.9, 0.5, 0.8, 1});
 }
 
 void SpaceScence::OnQuit() {

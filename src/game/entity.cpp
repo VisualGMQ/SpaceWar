@@ -1,7 +1,7 @@
 #include "game/entity.hpp"
 #include "game/constants.hpp"
 
-Entity* CreateFreightShip() {
+Entity* CreateFreightShip(int group) {
     Entity* entity = ECSContext.CreateEntity();
     entity->Add<MoveCmpt>(Point{0, 0});
     entity->Add<MotionCmpt>(Point{0, 0}, FreightShipMaxSpeed);
@@ -13,14 +13,15 @@ Entity* CreateFreightShip() {
                                                                   LazerDamage,
                                                                   LazerShooterSpeed,
                                                                   LazerShooterMaxSpeed,
-                                                                  LazerShooterCooldown);
-    entity->Add<CollisionCmpt>(Size{16, 16});
-    entity->Add<LifeCmpt>(FreightLife);
+                                                                  LazerShooterCooldown + 1);
+    entity->Add<CollisionCmpt>(Size{EntityCollisionSize, EntityCollisionSize});
+    entity->Add<LifeCmpt>(FreightShipLife);
     entity->Add<FreightShipCmpt>(weapon);
+    entity->Add<GroupCmpt>(group);
     return entity;
 }
 
-Entity* CreateFightShip() {
+Entity* CreateFightShip(int group) {
     Entity* entity = ECSContext.CreateEntity();
     entity->Add<MoveCmpt>(Point{0, 0});
     entity->Add<MotionCmpt>(Point{0, 0}, FightShipMaxSpeed);
@@ -44,28 +45,31 @@ Entity* CreateFightShip() {
                                                                    LazerShooterCooldown,
                                                                    10);
 
-    entity->Add<CollisionCmpt>(Size{16, 16});
-    entity->Add<LifeCmpt>(FreightLife);
+    entity->Add<CollisionCmpt>(Size{EntityCollisionSize, EntityCollisionSize});
+    entity->Add<LifeCmpt>(FightShipLife);
     entity->Add<FightShipCmpt>(weapon1, weapon2);
+    entity->Add<GroupCmpt>(group);
     return entity;
 }
 
-Entity* CreateBullet(int damage, Entity* owner, float maxSpeed) {
+Entity* CreateBullet(int group, int damage, Entity* owner, float maxSpeed) {
     Entity* entity = ECSContext.CreateEntity();
     entity->Add<MoveCmpt>(Point{0, 0});
     entity->Add<MotionCmpt>(Point{0, 0}, maxSpeed);
     entity->Add<RenderCmpt>(GameTileSheet->GetTile(0, 1));
     entity->Add<BulletCmpt>(BulletCmpt::Bullet, damage, owner);
     entity->Add<CollisionCmpt>(Size{8, 8});
+    entity->Add<GroupCmpt>(group);
     return entity;
 }
 
-Entity* CreateMissile(int damage, Entity* owner, float maxSpeed, Entity* target) {
+Entity* CreateMissile(int group, int damage, Entity* owner, float maxSpeed, Entity* target) {
     Entity* entity = ECSContext.CreateEntity();
     entity->Add<MoveCmpt>(Point{0, 0});
     entity->Add<MotionCmpt>(Point{0, 0}, maxSpeed);
     entity->Add<RenderCmpt>(GameTileSheet->GetTile(2, 1));
     entity->Add<BulletCmpt>(BulletCmpt::Missile, damage, owner, target);
     entity->Add<CollisionCmpt>(Size{10, 10});
+    entity->Add<GroupCmpt>(group);
     return entity;
 }

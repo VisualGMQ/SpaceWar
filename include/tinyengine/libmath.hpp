@@ -102,7 +102,36 @@ inline bool IsPointInRect(const Point& p, const Rect& r) {
     return r.x <= p.x && r.y <= p.y && r.x + r.w >= p.x && r.y + r.h >= p.y;
 }
 
-/* a matrix stored in row major*/
+template <typename T>
+class Mat {
+public:
+    Mat(const Size& size): size_(size) {
+        data_.resize(size.w * size.h);
+    }
+
+    T Get(const Point& p) const {
+        return data_.at(p.x * size_.h + p.y);
+    }
+
+    T& Get(const Point& p) {
+        return data_.at(p.x * size_.h + p.y);
+    }
+    void Set(const Point& p, const T& value) {
+        data_.at(p.y + p.x * size_.h) = value;
+    }
+    bool InMat(const Point& p) const {
+        return p.x >= 0 && p.y >= 0 && p.x < size_.w && p.y < size_.h;
+    }
+    inline void Fill(const T& t) { data_.fill(t); }
+
+    const Size& GetSize() const { return size_; }
+
+private:
+    std::vector<T> data_;
+    Size size_;
+};
+
+/* a matrix stored in col major*/
 class Mat44{
 public:
     static const Mat44 Eye;
@@ -171,4 +200,8 @@ inline Mat44 CreateSRT(const Point& pos, const Point& scale, float degree) {
                                   0,                  0, 1,     0,
                                   0,                  0, 0,     1,
            });
+}
+
+inline float Distance(const Point& p1, const Point& p2) {
+    return Len(p1 - p2);
 }

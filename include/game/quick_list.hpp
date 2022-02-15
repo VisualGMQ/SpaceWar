@@ -5,12 +5,15 @@
 template <typename T>
 class QuickList final {
 public:
+    using condition_func = std::function<bool(const T&)>;
+    using destroy_func = std::function<void(const T&)>;
+
     void Add(const T& elem) {
         datas_.push_back(elem);
     }
 
-    void RemoveAll(std::function<bool(const T&)> findFunc,
-                      std::function<void(const T&)> destroyFunc = nullptr) {
+    void RemoveAll(condition_func findFunc,
+                   destroy_func destroyFunc = nullptr) {
         std::size_t idx = 0;
         while (idx < datas_.size()) {
             if (datas_.size() > idx && findFunc(datas_[idx])) {
@@ -24,7 +27,13 @@ public:
             }
         }
     }
-    void Clear() { datas_.clear(); }
+
+    void Clear(condition_func condition = nullptr, destroy_func destroy = nullptr) {
+        if (destroy && condition) {
+            RemoveAll(condition, destroy);
+        }
+        datas_.clear();
+    }
 
     // for debug
     void PrintAll(std::function<void(const T&)> func = nullptr) {

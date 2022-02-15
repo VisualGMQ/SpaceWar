@@ -11,6 +11,7 @@ public:
     void Scale(const Point& scale);
     void SetAnchor(const Point& anchor);
     bool TryCalcView();
+    const Point& GetPosition() const { return position_; }
 
 private:
     Mat44 viewMat_;

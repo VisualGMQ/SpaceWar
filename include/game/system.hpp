@@ -56,3 +56,16 @@ private:
     void renderEntity(Entity* entity, const RenderCmpt&, float rotation);
     void renderCollideBox(Entity* entity);
 };
+
+class EnergyProductSystem: public UpdateSystem {
+public:
+    void Update(float) override;
+
+private:
+    void coolDown(EnergyProductCmpt& cmpt, float dt);
+};
+
+class AIUpdateSystem: public UpdateSystem {
+public:
+    void Update(float) override;
+};

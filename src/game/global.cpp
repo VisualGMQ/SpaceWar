@@ -9,7 +9,10 @@ std::unordered_map<std::string, Unique<Sound>> Sounds;
 QuickList<Entity*> Bullets;
 QuickList<Entity*> Entities;
 
-Entity* PlayerSpaceship;
+Entity* PlayerSpaceship = nullptr;
+GameInitInfo InitInfo;
+
+std::array<QuickList<Entity*>, 4> Groups;
 
 void loadImages() {
     GameTileSheet.reset(new TileSheet("assets/tilesheet.png", 8, 8));

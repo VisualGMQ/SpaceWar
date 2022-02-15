@@ -2,6 +2,7 @@
 
 #include "tinyengine/tinyengine.hpp"
 #include "game/quick_list.hpp"
+#include "game/init_info.hpp"
 
 extern Context ECSContext;
 extern SystemManager SystemMgr;
@@ -12,6 +13,10 @@ extern QuickList<Entity*> Bullets;
 extern QuickList<Entity*> Entities;
 
 extern Entity* PlayerSpaceship;
+
+extern std::array<QuickList<Entity*>, 4> Groups;
+
+extern GameInitInfo InitInfo;
 
 void LoadResources();
 Point MapGlobal2PlayerCoord(const Point& pos);

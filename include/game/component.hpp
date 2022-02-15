@@ -181,3 +181,55 @@ public:
     };
 };
 
+class PlanetCmpt: public Component {
+public:
+    void Init(const Point& position, const Size& size) {
+        positionInSpace = position;
+        generateMap(size);
+    }
+
+    Point positionInSpace;
+    Unique<Mat<Entity*>> map;
+
+private:
+    void generateMap(const Size& size);
+};
+
+class EnergyProductCmpt: public Component {
+public:
+    void Init(int amount, float duration) {
+        this->productAmount = amount;
+        this->duration = duration;
+        this->cooldown = duration;
+        this->amount = 0;
+    }
+    bool IsCoolDowning() { return cooldown > 0; }
+    void Release() {}
+
+    float duration;
+    float cooldown;
+    int productAmount;
+    int amount;
+};
+
+class GroupCmpt: public Component {
+public:
+    void Init(int group) {
+        groupIdx = group;
+    }
+    void Release() {}
+
+    int groupIdx;
+};
+
+class AICmpt: public Component {
+public:
+    using AIFunc = std::function<void(Entity*)>;
+
+    void Init(AIFunc func) {
+        this->func = func;
+    }
+    void Release() {}
+
+    AIFunc func;
+};

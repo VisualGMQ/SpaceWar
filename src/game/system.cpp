@@ -7,7 +7,6 @@ void PhysicalSystem::Update(float dt) {
             physicalStep(entity, dt,
                          *entity->Use<MoveCmpt>(),
                          *entity->Use<MotionCmpt>());
-
         }
     }
     
@@ -93,7 +92,8 @@ void CollideSystem::Update(float dt) {
     for (auto& bullet : Bullets) {
         for (auto& entity: Entities) {
             if (entity->Has<CollisionCmpt>() &&
-                bullet->Get<BulletCmpt>()->owner != entity &&
+                entity->Has<GroupCmpt>() &&
+                bullet->Get<GroupCmpt>()->groupIdx != entity->Get<GroupCmpt>()->groupIdx &&
                 IsRectsIntersect(bullet->Get<CollisionCmpt>()->rect,
                                  entity->Get<CollisionCmpt>()->rect)) {
                 if (entity->Has<LifeCmpt>()) {
@@ -119,10 +119,7 @@ void CleanupSystem::Update(float dt) {
 
     Entities.RemoveAll([](const EntityPtr& entity){
         if (entity->Has<LifeCmpt>() &&
-            entity->Get<LifeCmpt>()->hp <= 0 ||
-            entity->Has<MoveCmpt>() &&
-            !IsPointInRect(MapGlobal2PlayerCoord(entity->Get<MoveCmpt>()->position),
-                           SpaceshipRefreshArea)) {
+            entity->Get<LifeCmpt>()->hp <= 0) {
             return true;
         } else {
             return false;
@@ -186,13 +183,41 @@ void RenderEntitySystem::renderEntity(Entity* entity, const RenderCmpt& renderCm
             Renderer::DrawTexture(renderCmpt.texture,
                                   nullptr,
                                   pos,
-                                  Size{0, 0},
+                                  Size{EntityRenderSize, EntityRenderSize},
                                   rotation);
         } else {
             Renderer::DrawTile(renderCmpt.tile,
                                pos,
-                               Size{0, 0},
+                               Size{EntityRenderSize, EntityRenderSize},
                                rotation);
+        }
+    }
+}
+
+void EnergyProductSystem::Update(float dt) {
+    for (auto& entity: Entities) {
+        if (entity->Has<EnergyProductCmpt>()) {
+            coolDown(*entity->Use<EnergyProductCmpt>(), dt);
+        }
+    }
+}
+
+void EnergyProductSystem::coolDown(EnergyProductCmpt& cmpt, float dt) {
+    if (cmpt.IsCoolDowning()) {
+        cmpt.cooldown -= dt;
+    } else {
+        cmpt.cooldown = cmpt.duration;
+        cmpt.amount += cmpt.productAmount;
+    }
+}
+
+void AIUpdateSystem::Update(float) {
+    for (auto& entity : Entities) {
+        if (entity->Has<AICmpt>()) {
+            auto func = entity->Get<AICmpt>()->func;
+            if (func) {
+                func(entity);
+            }
         }
     }
 }

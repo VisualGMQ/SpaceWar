@@ -8,6 +8,7 @@ void Engine::Init(const std::string& title, const Size& size, Scence* scence) {
     if (!glfwInit()) {
         FATAL_ERROR("glfw init failed");
     }
+    InitEvent(size);
     glfwSetErrorCallback(error_callback);
 
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -27,7 +28,8 @@ void Engine::Init(const std::string& title, const Size& size, Scence* scence) {
 
     glfwMakeContextCurrent(window_);
 
-    glfwSetFramebufferSizeCallback(engine.GetWindow(), OnWindowResize);
+    glfwSetFramebufferSizeCallback(window_, OnWindowResize);
+    glfwSetMouseButtonCallback(window_, MouseBtnCallback);
 
     if (!gladLoadGL(glfwGetProcAddress)) {
         glfwTerminate();
@@ -75,6 +77,7 @@ void Engine::SwapContext() {
 }
 
 void Engine::PollEvent() {
+    EventUpdate();
     glfwPollEvents();
 }
 
@@ -87,7 +90,7 @@ void Engine::Shutdown() {
 }
 
 void Engine::Update(float deltaTime) {
-    deltaTime = std::min(deltaTime, 0.3f);
+    deltaTime = std::min(deltaTime, 0.03f);
     if (scence_)
         scence_->OnUpdate(deltaTime);
 }

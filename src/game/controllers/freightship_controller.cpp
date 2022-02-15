@@ -8,16 +8,16 @@ void FreightShipController::Update(float dt) {
     const float spd = 100;
     auto motionCmpt = entity_->Use<MotionCmpt>();
     if (IsKeyPressing(GLFW_KEY_A)) {
-        motionCmpt->acceleration += Point{-spd, 0};
+        MoveLeft(*motionCmpt);
     }
     if (IsKeyPressing(GLFW_KEY_D)) {
-        motionCmpt->acceleration += Point{spd, 0};
+        MoveRight(*motionCmpt);
     }
     if (IsKeyPressing(GLFW_KEY_S)) {
-        motionCmpt->acceleration += Point{0, spd};
+        MoveDown(*motionCmpt);
     }
     if (IsKeyPressing(GLFW_KEY_W)) {
-        motionCmpt->acceleration += Point{0, -spd};
+        MoveUp(*motionCmpt);
     }
 
     if (IsLeftPressing()) {
