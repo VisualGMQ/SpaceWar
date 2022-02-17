@@ -6,42 +6,11 @@ void SpaceScence::OnInit() {
     Entities.Clear();
     Bullets.Clear();
 
-    PlayerSpaceship = CreateFightShip(PlayerGroup);
-    Entities.Add(PlayerSpaceship);
-    PlayerSpaceship->Use<MoveCmpt>()->position = Point{400, 400};
+    initEnemies();
+    initPlayer();
+    calcGroupHps();
 
-    Entity* enemy = CreateFreightShip(Enemy1Group);
-    enemy->Add<AICmpt>(FreightShipAI);
-    enemy->Use<MoveCmpt>()->position = Point{100, 100};
-    Entities.Add(enemy);
-
-    enemy = CreateFreightShip(Enemy1Group);
-    enemy->Add<AICmpt>(FreightShipAI);
-    enemy->Use<MoveCmpt>()->position = Point{200, 100};
-    Entities.Add(enemy);
-
-    enemy = CreateFreightShip(Enemy1Group);
-    enemy->Add<AICmpt>(FreightShipAI);
-    enemy->Use<MoveCmpt>()->position = Point{100, 200};
-    Entities.Add(enemy);
-
-    // Entity* enemy = CreateFightShip(Enemy1Group);
-    // enemy->Add<AICmpt>(FightShipAI);
-    // enemy->Use<MoveCmpt>()->position = Point{100, 100};
-    // Entities.Add(enemy);
-
-    // enemy = CreateFightShip(Enemy1Group);
-    // enemy->Add<AICmpt>(FightShipAI);
-    // enemy->Use<MoveCmpt>()->position = Point{200, 100};
-    // Entities.Add(enemy);
-
-    // enemy = CreateFightShip(Enemy1Group);
-    // enemy->Add<AICmpt>(FightShipAI);
-    // enemy->Use<MoveCmpt>()->position = Point{100, 200};
-    // Entities.Add(enemy);
-
-    fightController_.reset(new FightShipController(PlayerSpaceship));
-
+    lookAtEntity_ = PlayerSpaceship;
     gameCamera_.SetAnchor(GameWindowSize / 2);
 
     SystemMgr.Clear();
@@ -62,10 +31,89 @@ void SpaceScence::OnInit() {
     }
 }
 
+void SpaceScence::calcGroupHps() {
+    for (int i = 0; i < InitInfo.groupNum; i++) {
+        for (auto& entity : Groups[i]) {
+            if (entity->Has<LifeCmpt>()) {
+                groupHps[i] += entity->Get<LifeCmpt>()->hp;
+            }
+        }
+    }
+}
+
+void SpaceScence::initPlayer() {
+    if (PlayerSpaceship && PlayerSpaceship->IsAlive()) {
+        ECSContext.DestroyEntity(PlayerSpaceship);
+    }
+    if (InitInfo.planeType == FightShip) {
+        PlayerSpaceship = CreateFightShip(PlayerGroup);
+        controller_.reset(new FightShipController(PlayerSpaceship));
+    } else if (InitInfo.planeType == FreightShip) {
+        PlayerSpaceship = CreateFreightShip(PlayerGroup);
+        controller_.reset(new FreightShipController(PlayerSpaceship));
+    }
+    Entities.Add(PlayerSpaceship);
+    Groups[PlayerGroup].Add(PlayerSpaceship);
+    PlayerSpaceship->Use<MoveCmpt>()->position = Point{0, 0};
+}
+
+void SpaceScence::initEnemies() {
+    generateEnemiesAt(PlayerGroup, Point{0, 0}, InitInfo.planeNum - 1);
+    if (InitInfo.groupNum == 2) {
+        generateEnemiesAt(Enemy1Group, Point{0, -720 * 4}, InitInfo.planeNum);
+    } else if (InitInfo.groupNum == 3) {
+        generateEnemiesAt(Enemy1Group, Point{-720 * 4, -720 * 4}, InitInfo.planeNum);
+        generateEnemiesAt(Enemy2Group, Point{720 * 4, -720 * 4}, InitInfo.planeNum);
+    } else if (InitInfo.groupNum == 4) {
+        generateEnemiesAt(Enemy1Group, Point{0, -720 * 4}, InitInfo.planeNum);
+        generateEnemiesAt(Enemy2Group, Point{720 * 4, 0}, InitInfo.planeNum);
+        generateEnemiesAt(Enemy3Group, Point{720 * 4, -720 * 4}, InitInfo.planeNum);
+    } else {
+        Log("group num invalid");
+    }
+}
+
+void SpaceScence::generateEnemiesAt(int group, const Point& p, int num) {
+    for (int i = 0; i < num; i++) {
+        Entity* enemy = CreateFreightShip(group);
+        enemy->Add<AICmpt>(FreightShipAI);
+        // Entity* enemy = CreateFightShip(group);
+        // enemy->Add<AICmpt>(FightShipAI);
+        enemy->Use<MoveCmpt>()->position += p + Point{Random<float>(-400, 400), Random<float>(-100, 100)};
+        Entities.Add(enemy);
+        Groups[group].Add(enemy);
+    }
+}
+
 void SpaceScence::OnUpdate(float dt) {
-    fightController_->Update(dt);
+    controller_->Update(dt);
     SystemMgr.Update(dt);
-    gameCamera_.MoveTo(PlayerSpaceship->Get<MoveCmpt>()->position);
+
+    if (lookAtEntity_ && lookAtEntity_->IsAlive()) {
+        gameCamera_.MoveTo(lookAtEntity_->Get<MoveCmpt>()->position);
+    } else {
+        if (!Groups[PlayerGroup].Empty()) {
+            lookAtEntity_ = *Groups[PlayerGroup].begin();
+        }
+    }
+
+    if (!PlayerSpaceship || !PlayerSpaceship->IsAlive()) {
+        if (IsKeyPressing(GLFW_KEY_SPACE)) {
+            PlayerSpaceship = lookAtEntity_;
+            if (PlayerSpaceship->Has<AICmpt>()) {
+                PlayerSpaceship->Remove<AICmpt>();
+            }
+            attachController();
+        }
+    }
+}
+
+void SpaceScence::attachController() {
+    if (PlayerSpaceship->Has<FreightShipCmpt>()) {
+        controller_.reset(new FreightShipController(PlayerSpaceship));
+    } else {
+        controller_.reset(new FightShipController(PlayerSpaceship));
+    }
 }
 
 void SpaceScence::OnRender() {
@@ -100,19 +148,46 @@ void SpaceScence::renderBackground() {
 void SpaceScence::renderGUI() {
     Renderer::SetCamera(guiCamera_);
 
-    auto life = PlayerSpaceship->Get<LifeCmpt>()->hp;
+    int life = 0;
+    if (PlayerSpaceship && PlayerSpaceship->IsAlive()) {
+        life = PlayerSpaceship->Get<LifeCmpt>()->hp;
+    }
     float xOffset = 16 * life;
     for (int i = 0; i < life; i++) {
-        Renderer::DrawTile(GameTileSheet->GetTile(1, 1),
+        Renderer::DrawTile(GameTileSheet->GetTile(5, 0),
                            Point{GameWindowSize.w - xOffset + i * 16, 8});
     }
 
     renderMiniMap();
-    if (PlayerSpaceship->Has<FreightShipCmpt>()) {
-        renderWeapons(PlayerSpaceship->Get<FreightShipCmpt>()->weapon, nullptr);
-    } else {
-        auto fightShip = PlayerSpaceship->Get<FightShipCmpt>();
-        renderWeapons(fightShip->weapon1, fightShip->weapon2);
+    if (PlayerSpaceship && PlayerSpaceship->IsAlive()) {
+        if (PlayerSpaceship->Has<FreightShipCmpt>()) {
+            renderWeapons(PlayerSpaceship->Get<FreightShipCmpt>()->weapon, nullptr);
+        } else {
+            auto fightShip = PlayerSpaceship->Get<FightShipCmpt>();
+            renderWeapons(fightShip->weapon1, fightShip->weapon2);
+        }
+    }
+
+    drawGroupHp();
+}
+
+void SpaceScence::drawGroupHp() {
+    static Color colors[4] = {Color{1, 0, 0, 1},
+                              Color{0, 1, 0, 1},
+                              Color{0, 0, 1, 1},
+                              Color{1, 1, 0, 1}};
+
+    for (int i = 0; i < InitInfo.groupNum; i++) {
+        int hp = 0;
+        for (auto& entity : Groups[i]) {
+            if (entity->Has<LifeCmpt>()) {
+                hp += entity->Get<LifeCmpt>()->hp;
+            }
+        }
+        Renderer::SetDrawColor(colors[i]);
+        Renderer::FillRect(Rect{150, GameWindowSize.h - 20 * (i + 1), hp / float(groupHps[i]) * 500, 20});
+        Renderer::SetDrawColor(Color{1, 1, 1, 1});
+        Renderer::DrawRect(Rect{150, GameWindowSize.h - 20 * (i + 1), 500, 20});
     }
 }
 
@@ -125,6 +200,10 @@ void SpaceScence::renderMiniMap() {
     Renderer::SetDrawColor(Color{255, 255, 255, 255});
     Renderer::DrawRect(mapRect);
 
+    if (!PlayerSpaceship || !PlayerSpaceship->IsAlive()) {
+        return;
+    }
+    
     for (auto& entity: Entities) {
         if (entity != PlayerSpaceship) {
             const auto& pos = entity->Get<MoveCmpt>()->position;
@@ -183,16 +262,6 @@ void SpaceScence::renderWeapons(SpaceshipWeaponCmpt* weapon1, SpaceshipWeaponCmp
         }
         offset.y += 20;
     }
-
-    // font.Render("ENERGY",
-    //             20,
-    //             Point{weaponInfoRect.x, weaponInfoRect.y} + offset,
-    //             Color{0.9, 0.3, 0.83, 1});
-    // std::string energyAmount = std::to_string(PlayerCore->Get<EnergyProductCmpt>()->amount);
-    // font.Render(energyAmount,
-    //             20,
-    //             Point{weaponInfoRect.x + weaponInfoRect.w - 20 - 20 * energyAmount.size(), weaponInfoRect.y} + offset,
-    //             Color{0.9, 0.5, 0.8, 1});
 }
 
 void SpaceScence::OnQuit() {

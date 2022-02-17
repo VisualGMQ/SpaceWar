@@ -15,11 +15,14 @@ GameInitInfo InitInfo;
 std::array<QuickList<Entity*>, 4> Groups;
 
 void loadImages() {
-    GameTileSheet.reset(new TileSheet("assets/tilesheet.png", 8, 8));
+    GameTileSheet.reset(new TileSheet("assets/tilesheet.png", 7, 1));
 }
 
 void loadSounds() {
     Sounds["shoot"] = std::make_unique<Sound>("assets/shoot.wav");
+    Sounds["hurt"] = std::make_unique<Sound>("assets/hurt.wav");
+    Sounds["explosion"] = std::make_unique<Sound>("assets/explose.wav");
+    Sounds["missile"] = std::make_unique<Sound>("assets/missile.wav");
 }
 
 void LoadResources() {

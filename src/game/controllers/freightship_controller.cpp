@@ -5,6 +5,10 @@ FreightShipController::FreightShipController(Entity* entity)
     : entity_(entity) {}
 
 void FreightShipController::Update(float dt) {
+    if (!entity_ || !entity_->IsAlive()) {
+        return;
+    }
+
     const float spd = 100;
     auto motionCmpt = entity_->Use<MotionCmpt>();
     if (IsKeyPressing(GLFW_KEY_A)) {
@@ -29,7 +33,7 @@ void FreightShipController::Update(float dt) {
                       Rotate(Point{0, -1}, entity_->Get<FightShipCmpt>()->degree));
             } else {
                 Shoot(*weapon,
-                      GetMousePosition() - entity_->Get<MoveCmpt>()->position);
+                      GetMousePosition() - GameWindowSize / 2);
             }
         }
     }

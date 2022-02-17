@@ -8,3 +8,5 @@ mkdir output
 cp ./build/SpaceSector output
 cp -r ./assets output
 rm -rf ./output/assets/test
+cp ./HowToPlay.md output/
+cp -r ./snapshot output

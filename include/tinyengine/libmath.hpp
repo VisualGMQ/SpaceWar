@@ -195,8 +195,8 @@ inline Mat44 CreateSRT(const Point& pos, const Point& scale, float degree) {
     float sinTheta = std::sin(theta),
           cosTheta = std::cos(theta);
     return Mat44({
-                 scale.x * cosTheta, scale.y * sinTheta, 0, pos.x,
-                -scale.x * sinTheta, scale.y * cosTheta, 0, pos.y,
+                 scale.x * cosTheta,-scale.y * sinTheta, 0, pos.x,
+                 scale.x * sinTheta, scale.y * cosTheta, 0, pos.y,
                                   0,                  0, 1,     0,
                                   0,                  0, 0,     1,
            });

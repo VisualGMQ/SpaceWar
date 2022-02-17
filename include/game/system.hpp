@@ -53,7 +53,7 @@ public:
     void Render() override;
 
 private:
-    void renderEntity(Entity* entity, const RenderCmpt&, float rotation);
+    void renderEntity(Entity* entity, const RenderCmpt&, float rotation, const Color&);
     void renderCollideBox(Entity* entity);
 };
 

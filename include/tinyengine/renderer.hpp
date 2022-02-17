@@ -31,15 +31,17 @@ public:
     static void FillRect(const Rect& rect);
     static void DrawTile(const Tile& tile,
                          const Point& pos,
-                         const Size& size = {0, 0},
+                         const Size& = {0, 0},
                          float degree = 0,
-                         FlipFlag flip = NoFlip);
+                         FlipFlag = NoFlip,
+                         const Color& = {1, 1, 1, 1});
     static void DrawTexture(const Texture* texture,
                             const Rect* srcrect,
                             const Point& pos,
-                            const Size& size = Size{0, 0},
+                            const Size& = Size{0, 0},
                             float degree = 0,
-                            FlipFlag flip = NoFlip);
+                            FlipFlag = NoFlip,
+                            const Color& = {1, 1, 1, 1});
     static void DrawTexture(const Texture* texture,
                             const Rect* rect,
                             const Mat44& transform,

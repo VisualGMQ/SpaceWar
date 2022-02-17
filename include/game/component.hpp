@@ -228,8 +228,10 @@ public:
 
     void Init(AIFunc func) {
         this->func = func;
+        target = nullptr;
     }
     void Release() {}
 
     AIFunc func;
+    Entity* target;
 };

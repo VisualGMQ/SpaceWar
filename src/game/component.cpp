@@ -23,5 +23,6 @@ Entity* SpaceshipWeaponCmpt::ShootMissile(const Point& dir, Entity* target) {
     }
     bullet->Use<MotionCmpt>()->speed = Normalize(dir) * shootSpeed;
     bullet->Use<MoveCmpt>()->position = owner->Get<MoveCmpt>()->position;
+    Sounds["missile"]->Play();
     return bullet;
 }

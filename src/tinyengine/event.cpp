@@ -66,6 +66,12 @@ bool IsRightPressed() {
 Point GetMousePosition() {
     double x, y;
     glfwGetCursorPos(engine.GetWindow(), &x, &y);
+    return Point{float(x), float(y)};
+}
+
+Point GetMousePositionMapped() {
+    double x, y;
+    glfwGetCursorPos(engine.GetWindow(), &x, &y);
     return Point{float(x) * WindowInitSize.w / engine.GetWindowSize().w,
                  float(y) * WindowInitSize.h / engine.GetWindowSize().h};
 }

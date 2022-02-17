@@ -5,6 +5,10 @@ FightShipController::FightShipController(Entity* entity)
     : entity_(entity) {}
 
 void FightShipController::Update(float dt) {
+    if (!entity_ || !entity_->IsAlive()) {
+        return;
+    }
+
     const float spd = 100;
     auto motionCmpt = entity_->Use<MotionCmpt>();
     auto ship = entity_->Use<FightShipCmpt>();
@@ -15,14 +19,14 @@ void FightShipController::Update(float dt) {
         TurnRight(*ship);
     }
     if (IsKeyPressing(GLFW_KEY_S)) {
-        SpeedUp(*motionCmpt, *ship);
+        SpeedDown(*motionCmpt, *ship);
     }
     if (IsKeyPressing(GLFW_KEY_W)) {
-        SpeedDown(*motionCmpt, *ship);
+        SpeedUp(*motionCmpt, *ship);
     }
 
     motionCmpt->speed = Rotate(Point{0, -1} * Len(motionCmpt->speed),
-                               -ship->degree);
+                               ship->degree);
 
     auto moveCmpt = entity_->Get<MoveCmpt>();
 
@@ -46,9 +50,9 @@ void FightShipController::weaponShoot(SpaceshipWeaponCmpt* weapon, const MoveCmp
     if (!weapon) return;
     Point dir;
     if (weapon->type == SpaceshipWeaponCmpt::Orientation) {
-        dir = Rotate(Point{0, -1}, -entity_->Get<FightShipCmpt>()->degree);
+        dir = Rotate(Point{0, -1}, entity_->Get<FightShipCmpt>()->degree);
     } else {
-        dir = GetMousePosition() - entity_->Get<MoveCmpt>()->position;
+        dir = GetMousePosition() - GameWindowSize / 2;
     }
 
     if (weapon->bulletType == BulletCmpt::Bullet) {
@@ -57,7 +61,7 @@ void FightShipController::weaponShoot(SpaceshipWeaponCmpt* weapon, const MoveCmp
         Entity* target = nullptr;
         for (auto& entity : Entities) {
             if (entity != entity_ &&
-                    IsPointInRect(MapPlayerCoord2Global(GetMousePosition()), entity->Get<CollisionCmpt>()->rect)) {
+                IsPointInRect(MapPlayerCoord2Global(GetMousePositionMapped()), entity->Get<CollisionCmpt>()->rect)) {
                 target = entity;
                 break;
             }

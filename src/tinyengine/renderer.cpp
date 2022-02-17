@@ -133,11 +133,12 @@ void Renderer::DrawTile(const Tile& tile,
                         const Point& pos,
                         const Size& size,
                         float degree,
-                        Renderer::FlipFlag flip) {
+                        Renderer::FlipFlag flip,
+                        const Color& color) {
     if (size.w == 0 && size.h == 0) {
-        DrawTexture(tile.texture, &tile.rect, pos, tile.size, degree, flip);
+        DrawTexture(tile.texture, &tile.rect, pos, tile.size, degree, flip, color);
     } else {
-        DrawTexture(tile.texture, &tile.rect, pos, size, degree, flip);
+        DrawTexture(tile.texture, &tile.rect, pos, size, degree, flip, color);
     }
 }
 
@@ -146,7 +147,8 @@ void Renderer::DrawTexture(const Texture* texture,
                            const Point& pos,
                            const Size& size,
                            float degree,
-                           FlipFlag flip) {
+                           FlipFlag flip,
+                           const Color& color) {
     if (texture) {
         auto scale = size;
         if (size.w == 0 && size.h == 0) {
@@ -158,7 +160,7 @@ void Renderer::DrawTexture(const Texture* texture,
         if (flip & Horizontal) {
             scale.w *= -1;
         }
-        DrawTexture(texture, srcrect, CreateSRT(pos, scale, degree));
+        DrawTexture(texture, srcrect, CreateSRT(pos, scale, degree), color);
     }
 }
 

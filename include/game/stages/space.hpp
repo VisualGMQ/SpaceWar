@@ -16,15 +16,23 @@ public:
     void OnQuit() override;
 
 private:
-    Unique<FightShipController> fightController_;
+    Unique<Controller> controller_;
+
+    Camera guiCamera_;
+    Camera gameCamera_;
+    Entity* lookAtEntity_;
+
+    std::vector<Point> stars_;
+    int groupHps[4] = {0};
 
     void renderBackground();
     void renderGUI();
     void renderMiniMap();
     void renderWeapons(SpaceshipWeaponCmpt* weapon1, SpaceshipWeaponCmpt* weapon2);
-
-    Camera guiCamera_;
-    Camera gameCamera_;
-
-    std::vector<Point> stars_;
+    void initEnemies();
+    void attachController();
+    void generateEnemiesAt(int group, const Point& p, int num);
+    void initPlayer();
+    void calcGroupHps();
+    void drawGroupHp();
 };

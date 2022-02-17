@@ -12,6 +12,8 @@ public:
         datas_.push_back(elem);
     }
 
+    bool Empty() const { return datas_.empty(); }
+
     void RemoveAll(condition_func findFunc,
                    destroy_func destroyFunc = nullptr) {
         std::size_t idx = 0;
@@ -47,6 +49,11 @@ public:
         }
         printf("\n");
     }
+
+
+    size_t Size() const { return datas_.size(); }
+    T& Get(size_t idx) { return datas_[idx]; }
+
 
     using const_iterator = typename std::vector<T>::const_iterator;
 

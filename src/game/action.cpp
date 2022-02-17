@@ -5,8 +5,6 @@ void Shoot(SpaceshipWeaponCmpt& weapon, const Point& dir) {
         return;
     }
 
-    Point playerCenterPos = weapon.owner->Get<MoveCmpt>()->position;
-
     Entity* bullet;
     bullet = weapon.ShootBullet(dir);
     if (bullet) {
@@ -26,8 +24,7 @@ void Shoot(SpaceshipWeaponCmpt& weapon, const Point& dir, Entity* target) {
     Entity* bullet;
     bullet = weapon.ShootMissile(dir, target);
     if (bullet) {
-        // FIXME the rotation have some bugs
-        bullet->Use<BulletCmpt>()->rotation = Degrees(std::acos(-Normalize(dir).y));
+        bullet->Use<BulletCmpt>()->rotation = Sign(dir.x) * Degrees(std::acos(-Normalize(dir).y));
         Bullets.Add(bullet);
         weapon.coolDown = weapon.shootDuration;
         Sounds["shoot"]->Play();
@@ -51,19 +48,19 @@ void MoveDown(MotionCmpt& motion) {
 }
 
 void SpeedUp(MotionCmpt& motion, FightShipCmpt& ship) {
-    motion.acceleration = Rotate(Point{0, FightShipAccelration},
-                                 -ship.degree);
+    motion.acceleration = Rotate(Point{0, -FightShipAccelration},
+                                 ship.degree);
 }
 
 void SpeedDown(MotionCmpt& motion, FightShipCmpt& ship) {
-    motion.acceleration = Rotate(Point{0, -FightShipAccelration},
-                                 -ship.degree);
+    motion.acceleration = Rotate(Point{0, FightShipAccelration},
+                                 ship.degree);
 }
 
 void TurnLeft(FightShipCmpt& ship) {
-    ship.degree += FightShipRotationDegree;
+    ship.degree -= FightShipRotationDegree;
 }
 
 void TurnRight(FightShipCmpt& ship) {
-    ship.degree -= FightShipRotationDegree;
+    ship.degree += FightShipRotationDegree;
 }

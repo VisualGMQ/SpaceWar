@@ -29,7 +29,7 @@ void WelcomeScence::OnRender() {
                 Point{(GameWindowSize.w - title.size() * pt) / 2, 200},
                 Color{0.8, 0.8, 1, 1});
 
-    title = "HTTPS://GITEE.COM/VISUALGMQ/SPACE-SECTOR.GIT";
+    title = "HTTPS://GITEE.COM/VISUALGMQ/SPACE-WAR.GIT";
     pt = 10;
     font.Render(title, pt,
                 Point{(GameWindowSize.w - title.size() * pt) / 2, 710},

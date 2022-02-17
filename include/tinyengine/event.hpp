@@ -11,6 +11,7 @@ bool IsRightPressing();
 bool IsLeftPressed();
 bool IsRightPressed();
 Point GetMousePosition();
+Point GetMousePositionMapped();
 
 void EventUpdate();
 

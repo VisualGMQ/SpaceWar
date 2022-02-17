@@ -56,13 +56,13 @@ void MissileUpdateSystem::updateMissile(float dt,
             bullet.target = nullptr;
         } else {
             Point v = bullet.target->Get<MoveCmpt>()->position - move.position;
-            float cross = Cross(motion.speed, v);
+            float cross = Cross(Rotate(Point{0, -1}, bullet.rotation), v);
             if (cross > 0) {
-                bullet.rotation -= MissileRotateDegree * dt;
-            } else {
                 bullet.rotation += MissileRotateDegree * dt;
+            } else {
+                bullet.rotation -= MissileRotateDegree * dt;
             }
-            Point dir = Rotate(Point{0, -1}, -bullet.rotation);
+            Point dir = Rotate(Point{0, -1}, bullet.rotation);
             motion.speed = dir * Len(motion.speed);
         }
     }
@@ -98,6 +98,7 @@ void CollideSystem::Update(float dt) {
                                  entity->Get<CollisionCmpt>()->rect)) {
                 if (entity->Has<LifeCmpt>()) {
                     entity->Use<LifeCmpt>()->hp -= bullet->Get<BulletCmpt>()->damage;
+                    Sounds["hurt"]->Play();
                 }
                 bullet->Use<BulletCmpt>()->alive = false;
             }
@@ -111,20 +112,33 @@ void CleanupSystem::Update(float dt) {
         ECSContext.DestroyEntity(entity);
     };
 
+    for (int i = 0; i < InitInfo.groupNum; i++) {
+        Groups[i].RemoveAll([](const EntityPtr& entity){
+            if (entity->Has<LifeCmpt>() &&
+                entity->Get<LifeCmpt>()->hp <= 0) {
+                return true;
+            } else {
+                return false;
+            }
+        });
+    }
+
     Bullets.RemoveAll([](const EntityPtr& entity){
         return !entity->Get<BulletCmpt>()->alive ||
                !IsPointInRect(MapGlobal2PlayerCoord(entity->Get<MoveCmpt>()->position),
                               BulletRefreshArea);
     }, destroyFunc);
 
-    Entities.RemoveAll([](const EntityPtr& entity){
+    Entities.RemoveAll([&](const EntityPtr& entity){
         if (entity->Has<LifeCmpt>() &&
             entity->Get<LifeCmpt>()->hp <= 0) {
+            Sounds["explosion"]->Play();
             return true;
         } else {
             return false;
         }
     }, destroyFunc);
+
 }
 
 void WeaponCooldownSystem::Update(float dt) {
@@ -154,8 +168,12 @@ void RenderEntitySystem::Render() {
             if (entity->Has<FightShipCmpt>()) {
                 rotation = entity->Get<FightShipCmpt>()->degree;
             }
-            renderEntity(entity, *entity->Get<RenderCmpt>(), rotation);
-            renderCollideBox(entity);
+            Color color = {1, 1, 1, 1};
+            if (entity->Has<GroupCmpt>()) {
+                color = GroupSpecColor[entity->Get<GroupCmpt>()->groupIdx];
+            }
+            renderEntity(entity, *entity->Get<RenderCmpt>(), rotation, color);
+            // renderCollideBox(entity);
         }
     }
 
@@ -164,8 +182,8 @@ void RenderEntitySystem::Render() {
         if (bullet->Get<BulletCmpt>()->type == BulletCmpt::Missile) {
             rotation = bullet->Get<BulletCmpt>()->rotation;
         }
-        renderEntity(bullet, *bullet->Get<RenderCmpt>(), rotation);
-        renderCollideBox(bullet);
+        renderEntity(bullet, *bullet->Get<RenderCmpt>(), rotation, Color{1, 1, 1, 1});
+        // renderCollideBox(bullet);
     }
 }
 
@@ -176,7 +194,10 @@ void RenderEntitySystem::renderCollideBox(Entity* entity) {
     }
 }
 
-void RenderEntitySystem::renderEntity(Entity* entity, const RenderCmpt& renderCmpt, float rotation) {
+void RenderEntitySystem::renderEntity(Entity* entity,
+                                      const RenderCmpt& renderCmpt,
+                                      float rotation,
+                                      const Color& color) {
     if (entity->Has<MoveCmpt>()) {
         auto& pos = entity->Get<MoveCmpt>()->position;
         if (renderCmpt.type == RenderCmpt::TypeTexture) {
@@ -184,12 +205,16 @@ void RenderEntitySystem::renderEntity(Entity* entity, const RenderCmpt& renderCm
                                   nullptr,
                                   pos,
                                   Size{EntityRenderSize, EntityRenderSize},
-                                  rotation);
+                                  rotation,
+                                  Renderer::NoFlip,
+                                  color);
         } else {
             Renderer::DrawTile(renderCmpt.tile,
                                pos,
                                Size{EntityRenderSize, EntityRenderSize},
-                               rotation);
+                               rotation,
+                               Renderer::NoFlip,
+                               color);
         }
     }
 }

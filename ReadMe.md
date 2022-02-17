@@ -24,3 +24,15 @@ pack.sh
 ```
 
 最终的结果在`output`文件夹下。
+
+## 游戏截图
+
+![welcome](./snapshot/welcome.png)
+
+![select](./snapshot/select_ship.png)
+
+![gaming](./snapshot/gaming.png)
+
+## 游戏操作
+
+[游戏操作](./HowToPlay.md)
