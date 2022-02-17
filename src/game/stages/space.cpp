@@ -1,4 +1,6 @@
 #include "game/stages/space.hpp"
+#include "game/gui.hpp"
+#include "game/stages/select.hpp"
 
 void SpaceScence::OnInit() {
     Renderer::SetClearColor(Color{0, 0, 0, 255});
@@ -15,8 +17,7 @@ void SpaceScence::OnInit() {
     SystemMgr.Clear();
     SystemMgr.AddUpdateSystem(new AIUpdateSystem);
     SystemMgr.AddUpdateSystem(new WeaponCooldownSystem);
-    SystemMgr.AddUpdateSystem(new EnergyProductSystem);
-    SystemMgr.AddUpdateSystem(new MissileUpdateSystem);
+    SystemMgr.AddUpdateSystem(new BulletUpdateSystem);
     SystemMgr.AddUpdateSystem(new PhysicalSystem);
     SystemMgr.AddUpdateSystem(new ColliRectCorrectSystem);
     SystemMgr.AddUpdateSystem(new CollideSystem);
@@ -57,27 +58,36 @@ void SpaceScence::initPlayer() {
 }
 
 void SpaceScence::initEnemies() {
-    generateEnemiesAt(PlayerGroup, Point{0, 0}, InitInfo.planeNum - 1);
+    if (InitInfo.planeType == FightShip) {
+        generateEnemiesAt(PlayerGroup, Point{0, 0}, InitInfo.fightShipNum - 1, InitInfo.freightShipNum);
+    } else {
+        generateEnemiesAt(PlayerGroup, Point{0, 0}, InitInfo.fightShipNum, InitInfo.freightShipNum - 1);
+    }
     if (InitInfo.groupNum == 2) {
-        generateEnemiesAt(Enemy1Group, Point{0, -720 * 4}, InitInfo.planeNum);
+        generateEnemiesAt(Enemy1Group, Point{0, -720 * 4}, InitInfo.fightShipNum, InitInfo.freightShipNum);
     } else if (InitInfo.groupNum == 3) {
-        generateEnemiesAt(Enemy1Group, Point{-720 * 4, -720 * 4}, InitInfo.planeNum);
-        generateEnemiesAt(Enemy2Group, Point{720 * 4, -720 * 4}, InitInfo.planeNum);
+        generateEnemiesAt(Enemy1Group, Point{-720 * 4, -720 * 4}, InitInfo.fightShipNum, InitInfo.freightShipNum);
+        generateEnemiesAt(Enemy2Group, Point{720 * 4, -720 * 4}, InitInfo.fightShipNum, InitInfo.freightShipNum);
     } else if (InitInfo.groupNum == 4) {
-        generateEnemiesAt(Enemy1Group, Point{0, -720 * 4}, InitInfo.planeNum);
-        generateEnemiesAt(Enemy2Group, Point{720 * 4, 0}, InitInfo.planeNum);
-        generateEnemiesAt(Enemy3Group, Point{720 * 4, -720 * 4}, InitInfo.planeNum);
+        generateEnemiesAt(Enemy1Group, Point{0, -720 * 4}, InitInfo.fightShipNum, InitInfo.freightShipNum);
+        generateEnemiesAt(Enemy2Group, Point{720 * 4, 0}, InitInfo.fightShipNum, InitInfo.freightShipNum);
+        generateEnemiesAt(Enemy3Group, Point{720 * 4, -720 * 4}, InitInfo.fightShipNum, InitInfo.freightShipNum);
     } else {
         Log("group num invalid");
     }
 }
 
-void SpaceScence::generateEnemiesAt(int group, const Point& p, int num) {
-    for (int i = 0; i < num; i++) {
+void SpaceScence::generateEnemiesAt(int group, const Point& p, int fightShipNum, int freightShipNum) {
+    for (int i = 0; i < freightShipNum; i++) {
         Entity* enemy = CreateFreightShip(group);
         enemy->Add<AICmpt>(FreightShipAI);
-        // Entity* enemy = CreateFightShip(group);
-        // enemy->Add<AICmpt>(FightShipAI);
+        enemy->Use<MoveCmpt>()->position += p + Point{Random<float>(-400, 400), Random<float>(-100, 100)};
+        Entities.Add(enemy);
+        Groups[group].Add(enemy);
+    }
+    for (int i = 0; i < fightShipNum; i++) {
+        Entity* enemy = CreateFightShip(group);
+        enemy->Add<AICmpt>(FightShipAI);
         enemy->Use<MoveCmpt>()->position += p + Point{Random<float>(-400, 400), Random<float>(-100, 100)};
         Entities.Add(enemy);
         Groups[group].Add(enemy);
@@ -85,8 +95,14 @@ void SpaceScence::generateEnemiesAt(int group, const Point& p, int num) {
 }
 
 void SpaceScence::OnUpdate(float dt) {
-    controller_->Update(dt);
+    if (PlayerSpaceship && PlayerSpaceship->IsAlive()) {
+        controller_->Update(dt);
+    }
     SystemMgr.Update(dt);
+    
+    if (PlayerSpaceship && !PlayerSpaceship->IsAlive()) {
+        PlayerSpaceship = nullptr;
+    }
 
     if (lookAtEntity_ && lookAtEntity_->IsAlive()) {
         gameCamera_.MoveTo(lookAtEntity_->Get<MoveCmpt>()->position);
@@ -105,6 +121,17 @@ void SpaceScence::OnUpdate(float dt) {
             attachController();
         }
     }
+
+    if (Groups[PlayerGroup].Empty()) {
+        mode_ = Lost;
+    }
+    bool win = true;
+    for (int i = 1; i < 4; i++) {
+        win = win && Groups[i].Empty();
+    }
+    if (win) {
+        mode_ = Win;
+    }
 }
 
 void SpaceScence::attachController() {
@@ -122,6 +149,20 @@ void SpaceScence::OnRender() {
 
     Renderer::SetCamera(guiCamera_);
     renderGUI();
+
+    auto& font = engine.GetInnerBmpFont();
+    if (mode_ == Win) {
+        font.Render("WIN", 40, GameWindowSize / 2 - Point{60, 60}, Color{0, 1, 0, 1});
+    } else if (mode_ == Lost) {
+        font.Render("LOST", 40, GameWindowSize / 2 - Point{80, 60}, Color{1, 0, 0, 1});
+    }
+    if (mode_ != Gaming) {
+        std::string msg = "PRESS SPACE TO RESTART";
+        font.Render(msg, 20, GameWindowSize / 2 - Point{msg.length() * 20 / 2.0f, 0}, Color{1, 1, 1, 1});
+        if (IsKeyPressing(GLFW_KEY_SPACE)) {
+            engine.ChangeScence(new SelectScence);
+        }
+    }
 }
 
 void SpaceScence::renderBackground() {
@@ -202,17 +243,15 @@ void SpaceScence::renderMiniMap() {
     if (!PlayerSpaceship || !PlayerSpaceship->IsAlive()) {
         return;
     }
-    
+
     for (auto& entity: Entities) {
         if (entity != PlayerSpaceship) {
             const auto& pos = entity->Get<MoveCmpt>()->position;
-            Point entityOnMapPos = (pos - PlayerSpaceship->Get<MoveCmpt>()->position) * Size{mapRect.w, mapRect.h} / GameWindowSize +
+            Point entityOnMapPos = (pos - PlayerSpaceship->Get<MoveCmpt>()->position) * Size{mapRect.w, mapRect.h} / (GameWindowSize * 8) +
                                    Point{mapRect.x, mapRect.y} + Size{mapRect.w, mapRect.h} / 2;
             if (IsPointInRect(entityOnMapPos, mapRect)) {
-                if (entity->Has<FreightShipCmpt>()) {
-                    Renderer::SetDrawColor(Color{255, 255, 255, 255});
-                } else {
-                    Renderer::SetDrawColor(Color{0, 0, 255, 255});
+                if (entity->Has<GroupCmpt>()) {
+                    Renderer::SetDrawColor(GroupSpecColor[entity->Get<GroupCmpt>()->groupIdx]);
                 }
                 Renderer::FillRect(Rect{entityOnMapPos.x - 1, entityOnMapPos.y - 1, 2, 2});
             }

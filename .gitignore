@@ -4,3 +4,6 @@ build
 xcode-build
 .cache
 macos
+TODO.txt
+design.txt
+compile_commands.json

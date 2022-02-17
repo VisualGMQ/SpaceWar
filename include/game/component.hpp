@@ -50,6 +50,7 @@ public:
         this->type = type;
         rotation = 0;
         alive = true;
+        liveTime = 0;
     }
     inline void Release() override {}
 
@@ -59,6 +60,7 @@ public:
     Entity* target;
     float rotation;
     bool alive;
+    float liveTime;
 };
 
 

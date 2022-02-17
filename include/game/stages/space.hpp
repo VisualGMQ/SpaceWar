@@ -38,7 +38,7 @@ private:
     void renderWeapons(SpaceshipWeaponCmpt* weapon1, SpaceshipWeaponCmpt* weapon2);
     void initEnemies();
     void attachController();
-    void generateEnemiesAt(int group, const Point& p, int num);
+    void generateEnemiesAt(int group, const Point& p, int fightShipNum, int freightShipNum);
     void initPlayer();
     void calcGroupHps();
     void drawGroupHp();

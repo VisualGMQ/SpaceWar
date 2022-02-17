@@ -36,7 +36,7 @@ void PhysicalSystem::physicalStep(Entity* entity,
     motionCmpt.acceleration = Point{0, 0};
 }
 
-void MissileUpdateSystem::Update(float dt) {
+void BulletUpdateSystem::Update(float dt) {
     for (auto& bullet : Bullets) {
         if (bullet->Get<BulletCmpt>()->type == BulletCmpt::Missile) {
             updateMissile(dt,
@@ -44,10 +44,11 @@ void MissileUpdateSystem::Update(float dt) {
                           *bullet->Use<MoveCmpt>(),
                           *bullet->Use<MotionCmpt>());
         }
+        updateBulletLife(dt, *bullet->Use<BulletCmpt>());
     }
 }
 
-void MissileUpdateSystem::updateMissile(float dt,
+void BulletUpdateSystem::updateMissile(float dt,
                                         BulletCmpt& bullet,
                                         MoveCmpt& move,
                                         MotionCmpt& motion) {
@@ -66,6 +67,10 @@ void MissileUpdateSystem::updateMissile(float dt,
             motion.speed = dir * Len(motion.speed);
         }
     }
+}
+
+void BulletUpdateSystem::updateBulletLife(float dt, BulletCmpt& bullet) {
+    bullet.liveTime += dt;
 }
 
 void ColliRectCorrectSystem::Update(float dt) {
@@ -124,8 +129,7 @@ void CleanupSystem::Update(float dt) {
 
     Bullets.RemoveAll([](const EntityPtr& entity){
         return !entity->Get<BulletCmpt>()->alive ||
-               !IsPointInRect(MapGlobal2PlayerCoord(entity->Get<MoveCmpt>()->position),
-                              BulletRefreshArea);
+               entity->Get<BulletCmpt>()->liveTime >= BulletDieTime;
     }, destroyFunc);
 
     Entities.RemoveAll([&](const EntityPtr& entity){

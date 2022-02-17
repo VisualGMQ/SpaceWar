@@ -5,15 +5,15 @@
 #include "game/stages/space.hpp"
 
 void SelectScence::OnInit() {
-    // TODO move it to welcome stage
-    LoadResources();
+    Renderer::SetClearColor(Color{0.1, 0.1, 0.1, 1});
 
     switchBtn_.reset(new Texture("assets/switch_btn.png"));
     goBtn_.reset(new Texture("assets/go_btn.png"));
 
     Renderer::SetCamera(camera_);
     InitInfo.planeType = 1;
-    InitInfo.planeNum = 5;
+    InitInfo.fightShipNum = 3;
+    InitInfo.freightShipNum = 2;
     InitInfo.groupNum = 2;
 }
 
@@ -83,7 +83,11 @@ void SelectScence::renderSelectShip() {
 
 void SelectScence::renderProperties() {
     auto& font = engine.GetInnerBmpFont();
-    if (InitInfo.planeType == 1) {
+    if (InitInfo.planeType == FreightShip) {
+        font.Render("FREIGHT SHIP",
+                    20,
+                    Point{80, 380},
+                    Color{0.8, 0.1, 0.8, 1});
         font.Render("HP: " + std::to_string(FreightShipLife),
                     20,
                     Point{80, 400},
@@ -108,7 +112,11 @@ void SelectScence::renderProperties() {
                     20,
                     Point{80, 500},
                     Color{0, 0.7, 0.7, 1});
-    } else if (InitInfo.planeType == 2) {
+    } else if (InitInfo.planeType == FightShip) {
+        font.Render("FIGHT SHIP",
+                    20,
+                    Point{80, 380},
+                    Color{0.8, 0.1, 0.8, 1});
         font.Render("HP: " + std::to_string(FightShipLife),
                     20,
                     Point{80, 400},
@@ -158,22 +166,41 @@ void SelectScence::renderGroupNumPanel() {
 
 void SelectScence::renderPlaneNumPanel() {
     auto& font = engine.GetInnerBmpFont();
-    font.Render("PLANE NUMBER:",
+
+    font.Render("FIGHTSHIPS:",
                  20,
                  Point{600, 400},
                  Color{0.3, 0.6, 0.8, 1});
 
     if (Button(switchBtn_.get(), Point{870, 410}, Size{switchBtn_->GetSize().w, 20})) {
-        InitInfo.planeNum --;
-        if (InitInfo.planeNum <= 0)
-            InitInfo.planeNum = 100;
+        InitInfo.fightShipNum --;
+        if (InitInfo.fightShipNum <= 0)
+            InitInfo.fightShipNum = 100;
     }
-    font.Render(std::to_string(InitInfo.planeNum), 20, Point{890, 400}, Color{0.6, 0.3, 0.8, 1});
+    font.Render(std::to_string(InitInfo.fightShipNum), 20, Point{890, 400}, Color{0.6, 0.3, 0.8, 1});
     if (Button(switchBtn_.get(), Point{960, 410}, Size{switchBtn_->GetSize().w, 20}, true)) {
-        InitInfo.planeNum ++;
-        if (InitInfo.planeNum > 100)
-            InitInfo.planeNum = 1;
+        InitInfo.fightShipNum ++;
+        if (InitInfo.fightShipNum> 100)
+            InitInfo.fightShipNum = 1;
     }
+
+    font.Render("FREIGHTSHIPS:",
+                 20,
+                 Point{600, 420},
+                 Color{0.3, 0.6, 0.8, 1});
+
+    if (Button(switchBtn_.get(), Point{870, 430}, Size{switchBtn_->GetSize().w, 20})) {
+        InitInfo.freightShipNum --;
+        if (InitInfo.freightShipNum <= 0)
+            InitInfo.freightShipNum = 100;
+    }
+    font.Render(std::to_string(InitInfo.freightShipNum), 20, Point{890, 420}, Color{0.6, 0.3, 0.8, 1});
+    if (Button(switchBtn_.get(), Point{960, 430}, Size{switchBtn_->GetSize().w, 20}, true)) {
+        InitInfo.freightShipNum ++;
+        if (InitInfo.freightShipNum> 100)
+            InitInfo.freightShipNum = 1;
+    }
+
 }
 
 void SelectScence::renderGoBtn() {

@@ -2,8 +2,11 @@
 #include "game/gui.hpp"
 #include "game/constants.hpp"
 #include "game/stages/select.hpp"
+#include "game/global.hpp"
 
 void WelcomeScence::OnInit() {
+    Renderer::SetClearColor(Color{0.1, 0.1, 0.1, 1});
+
     startImage_.reset(new Texture("assets/start_btn.png"));
     exitImage_.reset(new Texture("assets/exit_btn.png"));
 
@@ -12,6 +15,8 @@ void WelcomeScence::OnInit() {
     auto cursor = glfwCreateCursor(&image, image.width / 2, image.height / 2);
     glfwSetCursor(engine.GetWindow(), cursor);
     stbi_image_free(image.pixels);
+
+    LoadResources();
 }
 
 void WelcomeScence::OnRender() {

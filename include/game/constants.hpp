@@ -25,7 +25,7 @@ constexpr int CoreEnergyProductAmount = 1;
 
 constexpr Size GameWindowSize = {1024, 720};
 
-constexpr Rect BulletRefreshArea{-100, -100, 1124, 820};
+constexpr float BulletDieTime = 10;
 constexpr int BlockSize = 16;
 
 constexpr int PlayerGroup = 0;

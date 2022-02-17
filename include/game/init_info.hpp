@@ -8,5 +8,6 @@ enum PlaneType {
 struct GameInitInfo {
     int planeType;
     int groupNum;
-    int planeNum;
+    int fightShipNum;
+    int freightShipNum;
 };

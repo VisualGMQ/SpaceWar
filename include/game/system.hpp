@@ -14,12 +14,13 @@ private:
     void physicalStep(Entity* entity, float dt, MoveCmpt&, MotionCmpt&);
 };
 
-class MissileUpdateSystem: public UpdateSystem {
+class BulletUpdateSystem: public UpdateSystem {
 public:
     void Update(float dt) override;
 
 private:
     void updateMissile(float dt, BulletCmpt&, MoveCmpt&, MotionCmpt&);
+    void updateBulletLife(float dt, BulletCmpt&);
 };
 
 class ColliRectCorrectSystem: public UpdateSystem {
