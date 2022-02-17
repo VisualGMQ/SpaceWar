@@ -62,9 +62,9 @@ void FightShipAI(Entity* self) {
     auto shipDir = Rotate(Point{0, -1}, self->Get<FightShipCmpt>()->degree);
     auto cross = Cross(shipDir, ndir);
     if (cross > 0) {
-        TurnRight(*ship);
+        TurnRight(*self->Use<MotionCmpt>(), *ship);
     } else {
-        TurnLeft(*ship);
+        TurnLeft(*self->Use<MotionCmpt>(), *ship);
     }
     if (abs(Cross(Normalize(motion->speed), Normalize(dir))) < std::sin(Radians(10))) {
         if (ship->weapon2->bulletAmount > 0 && Random(1.0f, 100.0f) < 5) {

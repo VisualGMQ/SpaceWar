@@ -57,10 +57,14 @@ void SpeedDown(MotionCmpt& motion, FightShipCmpt& ship) {
                                  ship.degree);
 }
 
-void TurnLeft(FightShipCmpt& ship) {
+void TurnLeft(MotionCmpt& motion, FightShipCmpt& ship) {
     ship.degree -= FightShipRotationDegree;
+    motion.speed = Rotate(Point{0, -1} * Len(motion.speed),
+                          ship.degree);
 }
 
-void TurnRight(FightShipCmpt& ship) {
+void TurnRight(MotionCmpt& motion, FightShipCmpt& ship) {
     ship.degree += FightShipRotationDegree;
+    motion.speed = Rotate(Point{0, -1} * Len(motion.speed),
+                          ship.degree);
 }

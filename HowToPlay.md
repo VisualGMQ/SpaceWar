@@ -1,7 +1,8 @@
+在命令行中运行`SpaceWar`即可（确保`assets`文件夹在同一目录下）
+
 ![welcome](./snapshot/welcome.png)
 
 开始界面，上方按钮进入游戏，下方按钮退出游戏  
-
 
 ![select-ship](./snapshot/select_ship.png)
 
@@ -16,7 +17,6 @@
 * 战斗机（看上去就像战斗机的那个）：血量少，但是速度快，攻击频率高，有炮弹和导弹两种武器，炮弹只可以向飞行方向射击。
 
 战斗机和防御机的起始数量是随机的（总数为Plane Number）。
-
 
 ![gaming](./snapshot/gaming.png)
 
@@ -39,4 +39,3 @@
 胜利条件：
 
 全灭其他所有阵营获得胜利
-

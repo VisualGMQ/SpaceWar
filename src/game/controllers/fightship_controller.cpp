@@ -13,10 +13,10 @@ void FightShipController::Update(float dt) {
     auto motionCmpt = entity_->Use<MotionCmpt>();
     auto ship = entity_->Use<FightShipCmpt>();
     if (IsKeyPressing(GLFW_KEY_A)) {
-        TurnLeft(*ship);
+        TurnLeft(*motionCmpt, *ship);
     }
     if (IsKeyPressing(GLFW_KEY_D)) {
-        TurnRight(*ship);
+        TurnRight(*motionCmpt, *ship);
     }
     if (IsKeyPressing(GLFW_KEY_S)) {
         SpeedDown(*motionCmpt, *ship);
@@ -24,9 +24,6 @@ void FightShipController::Update(float dt) {
     if (IsKeyPressing(GLFW_KEY_W)) {
         SpeedUp(*motionCmpt, *ship);
     }
-
-    motionCmpt->speed = Rotate(Point{0, -1} * Len(motionCmpt->speed),
-                               ship->degree);
 
     auto moveCmpt = entity_->Get<MoveCmpt>();
 
