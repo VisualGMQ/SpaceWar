@@ -4,7 +4,7 @@
 
 ## 编译方法
 
-使用CMake 3.20及以上进行编译。  
+使用CMake 3.20及以上进行编译。目前只能在Mac平台下编译（因为我用的glad是Mac专属，你也可以将你平台的glad替换`libs/glad`文件夹来编译，glad指定OpenGL3.3 Core版本）
 
 ```bash
 cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
