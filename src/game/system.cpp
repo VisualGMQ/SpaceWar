@@ -107,7 +107,6 @@ void CollideSystem::Update(float dt) {
 }
 
 void CleanupSystem::Update(float dt) {
-    using EntityPtr = Entity*;
     auto destroyFunc = [&](const EntityPtr& entity){
         ECSContext.DestroyEntity(entity);
     };

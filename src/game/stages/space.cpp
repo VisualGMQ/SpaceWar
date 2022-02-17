@@ -3,8 +3,7 @@
 void SpaceScence::OnInit() {
     Renderer::SetClearColor(Color{0, 0, 0, 255});
 
-    Entities.Clear();
-    Bullets.Clear();
+    mode_ = Gaming;
 
     initEnemies();
     initPlayer();
@@ -265,5 +264,13 @@ void SpaceScence::renderWeapons(SpaceshipWeaponCmpt* weapon1, SpaceshipWeaponCmp
 }
 
 void SpaceScence::OnQuit() {
+    auto destroyFunc = [&](const EntityPtr& entity){
+        ECSContext.DestroyEntity(entity);
+    };
 
+    for (int i = 0; i < 4; i++) {
+        Groups[i].Clear();
+    }
+    Entities.Clear(nullptr, destroyFunc);
+    Bullets.Clear(nullptr, destroyFunc);
 }
