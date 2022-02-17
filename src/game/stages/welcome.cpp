@@ -9,13 +9,6 @@ void WelcomeScence::OnInit() {
 
     startImage_.reset(new Texture("assets/start_btn.png"));
     exitImage_.reset(new Texture("assets/exit_btn.png"));
-
-    GLFWimage image;
-    image.pixels = stbi_load("assets/cursor.png", &image.width, &image.height, nullptr, 0);
-    auto cursor = glfwCreateCursor(&image, image.width / 2, image.height / 2);
-    glfwSetCursor(engine.GetWindow(), cursor);
-    stbi_image_free(image.pixels);
-
     LoadResources();
 }
 

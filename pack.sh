@@ -5,7 +5,7 @@ if [ -d "./output" ]; then
 fi
 
 mkdir output
-cp ./build/SpaceSector output
+cp ./build/SpaceWar output
 cp -r ./assets output
 rm -rf ./output/assets/test
 cp ./HowToPlay.md output/

@@ -6,5 +6,5 @@
 
 // RUN_WINDOW("Space War v1.0", GameWindowSize.w, GameWindowSize.h, SelectScence)
 // RUN_WINDOW("Space War v1.0", GameWindowSize.w, GameWindowSize.h, SpaceScence)
-RUN_WINDOW("Space War v1.0", GameWindowSize.w, GameWindowSize.h, WelcomeScence)
-// RUN_WINDOW("Space War v1.0", GameWindowSize.w, GameWindowSize.h, GameLogoScence)
+// RUN_WINDOW("Space War v1.0", GameWindowSize.w, GameWindowSize.h, WelcomeScence)
+RUN_WINDOW("Space War v1.0", GameWindowSize.w, GameWindowSize.h, GameLogoScence)
