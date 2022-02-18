@@ -4,6 +4,11 @@
 
 void SpaceScence::OnInit() {
     Renderer::SetClearColor(Color{0, 0, 0, 255});
+    Log("Entities size = %ld", Entities.Size());
+    Log("Bullets size = %ld", Bullets.Size());
+    for (int i = 0; i < 4; i++) {
+        Log("Group %d size = %ld", i, Groups[i].Size());
+    }
 
     mode_ = Gaming;
 
@@ -189,7 +194,7 @@ void SpaceScence::renderGUI() {
     Renderer::SetCamera(guiCamera_);
 
     int life = 0;
-    if (PlayerSpaceship && PlayerSpaceship->IsAlive()) {
+    if (PlayerSpaceship && PlayerSpaceship->IsAlive() && PlayerSpaceship->Has<LifeCmpt>()) {
         life = PlayerSpaceship->Get<LifeCmpt>()->hp;
     }
     float xOffset = 16 * life;
@@ -203,8 +208,10 @@ void SpaceScence::renderGUI() {
         if (PlayerSpaceship->Has<FreightShipCmpt>()) {
             renderWeapons(PlayerSpaceship->Get<FreightShipCmpt>()->weapon, nullptr);
         } else {
-            auto fightShip = PlayerSpaceship->Get<FightShipCmpt>();
-            renderWeapons(fightShip->weapon1, fightShip->weapon2);
+            if (PlayerSpaceship->Has<FightShipCmpt>()) {
+                auto fightShip = PlayerSpaceship->Get<FightShipCmpt>();
+                renderWeapons(fightShip->weapon1, fightShip->weapon2);
+            }
         }
     }
 
@@ -246,6 +253,7 @@ void SpaceScence::renderMiniMap() {
 
     for (auto& entity: Entities) {
         if (entity != PlayerSpaceship) {
+            if (!entity->Has<MoveCmpt>()) continue;
             const auto& pos = entity->Get<MoveCmpt>()->position;
             Point entityOnMapPos = (pos - PlayerSpaceship->Get<MoveCmpt>()->position) * Size{mapRect.w, mapRect.h} / (GameWindowSize * 8) +
                                    Point{mapRect.x, mapRect.y} + Size{mapRect.w, mapRect.h} / 2;
@@ -257,6 +265,9 @@ void SpaceScence::renderMiniMap() {
             }
         }
     }
+    Renderer::SetDrawColor(Color{1, 1, 1, 1});
+    Renderer::FillRect(Rect{mapRect.x + mapRect.w / 2, mapRect.y + mapRect.h / 2,
+                            2, 2});
 }
 
 void SpaceScence::renderWeapons(SpaceshipWeaponCmpt* weapon1, SpaceshipWeaponCmpt* weapon2) {

@@ -63,8 +63,6 @@ public:
     float liveTime;
 };
 
-
-
 class SpaceshipWeaponCmpt: public Component {
 public:
     enum Type {

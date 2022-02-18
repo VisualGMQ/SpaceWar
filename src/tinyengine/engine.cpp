@@ -31,10 +31,17 @@ void Engine::Init(const std::string& title, const Size& size, Scence* scence) {
     glfwSetFramebufferSizeCallback(window_, OnWindowResize);
     glfwSetMouseButtonCallback(window_, MouseBtnCallback);
 
+#ifdef TINYENGINE_USE_GLEW
+    if (GLEW_OK != glewInit()) {
+        glfwTerminate();
+        FATAL_ERROR("glew init failed");
+    }
+#else
     if (!gladLoadGL(glfwGetProcAddress)) {
         glfwTerminate();
         FATAL_ERROR("glad load failed");
     }
+#endif
 
     int width, height;
     glfwGetFramebufferSize(GetWindow(), &width, &height);

@@ -1,6 +1,11 @@
 #pragma once
 
-#include "glad/gl.h"
+#ifdef TINYENGINE_USE_GLEW
+    #include "GL/glew.h"
+#else
+    #include "glad/gl.h"
+#endif
+
 #include "GLFW/glfw3.h"
 
 #include <string>
