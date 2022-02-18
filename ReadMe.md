@@ -1,6 +1,7 @@
 # SpaceWar
 
-为1MGames游戏开发比赛制作的游戏。
+为1MGames游戏开发比赛制作的游戏。  
+编译好的参赛作品在[这里](https://gitee.com/VisualGMQ/space-war/releases/v1.0.0)
 
 ## 编译方法
 
