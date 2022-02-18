@@ -7,7 +7,13 @@
 
 编译平台为MacOS（在MacOS Big Sur 11.6中编译成功且结果在1M以下），也可以在其他平台编译，但编译结果**不保证在1M以下**，仅仅是为了方便不同平台进行编译。
 
-使用CMake 3.20及以上进行编译。
+使用CMake 3.20及以上进行编译。需要拉取`glfw`作为子工程：
+
+```bash
+git submodule update --init --recursive
+```
+
+然后编译：
 
 ```bash
 cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
