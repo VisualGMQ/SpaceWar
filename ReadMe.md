@@ -34,7 +34,7 @@ cmake --build build --target CompressExe
 编译好后执行pack命令打包
 
 ```bash
-cmakd --build build --target Pack
+cmake --build build --target Pack
 ```
 
 最终的结果在`output`文件夹下：
