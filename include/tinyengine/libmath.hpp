@@ -63,7 +63,7 @@ T Random(const T& low, const T& high) {
     static_assert(std::is_floating_point<T>::value || std::is_integral<T>::value);
 
     std::random_device device;
-    if (std::is_floating_point<T>::value) {
+    if constexpr (std::is_floating_point<T>::value) {
         std::uniform_real_distribution<T> dist(low, high);
         return dist(device);
     } else {

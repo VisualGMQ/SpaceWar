@@ -26,6 +26,8 @@
 #include <utility>
 #include <limits>
 #include <cassert>
+#include <functional>
+#include <cstring>
 
 #include "miniaudio.h"
 #include "stb_image.h"

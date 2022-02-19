@@ -28,6 +28,7 @@ target_include_directories(
 )
 
 option(USE_GLEW "use glew rather than glad" OFF)
+option(BUILD_TEST "build unittests" OFF)
 
 if (USE_GLEW)
     message(STATUS "use glew to load opengl functions")
@@ -42,7 +43,7 @@ if (USE_GLEW)
         PUBLIC $<$<BOOL:"${USE_GLEW}">:TINYENGINE_USE_GLEW>
     )
 else()
-    message(STATUS "use glad to load opengl functions, this only work on MacOS")
+    message(STATUS "use glad to load opengl functions")
     target_include_directories(
         ${ENGINE_NAME}
         PUBLIC libs/glad/include
@@ -106,7 +107,7 @@ add_custom_target(
     COMMAND ${CMAKE_COMMAND} -E remove_directory output
     COMMAND ${CMAKE_COMMAND} -E make_directory output
     COMMAND ${CMAKE_COMMAND} -E make_directory output/game
-    COMMAND ${CMAKE_COMMAND} -E copy ./build/${PROJECT_NAME} output/game/${PROJECT_NAME}
+    COMMAND ${CMAKE_COMMAND} -E copy $<IF:$<STREQUAL:$<PLATFORM_ID>,"Windows">,./build/${PROJECT_NAME}.exe,./build/${PROJECT_NAME}> output/game/${PROJECT_NAME}
     COMMAND ${CMAKE_COMMAND} -E copy_directory ./assets output/game/assets
     COMMAND ${CMAKE_COMMAND} -E remove_directory ./output/game/assets/test
     COMMAND ${CMAKE_COMMAND} -E copy ./HowToPlay.md output/
